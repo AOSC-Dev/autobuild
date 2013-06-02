@@ -1,0 +1,136 @@
+#! /bin/bash
+
+getsize(){
+	du -s $1 | tail -n 1 | cut -f 1
+}
+
+getinfo(){
+	grep ^$2 $1 | cut -d " " -f 2
+}
+
+getdir(){
+	pushd $1 1>&2
+	for i in `find .`
+	do
+		if [ -d $i ]
+		then
+		echo $i
+		fi
+	done
+	popd 1>&2
+}
+
+getfile(){
+        pushd $1 1>&2
+        for i in `find .`
+        do
+                if [ ! -d $i ]
+                then
+                echo $i
+                fi
+        done
+	popd 1>&2
+}
+
+consdir(){
+	pushd $1 1>&2
+	for i in $2
+	do
+		if [ "x$DEBUG" != "x" ]
+		then
+			echo Creating $i
+		fi
+		mkdir -p $i
+	done
+	popd 1>&2
+}
+
+havefile(){
+	pushd $1 1>&2
+	for i in `find *`
+	do
+		if [ ! -d $i ]
+		then
+		popd 1>&2
+		return 0
+		fi
+	done
+	popd 1>&2
+	return 1
+}
+
+PREFIX=/usr
+if [ -e /etc/autodivide ]
+then
+	. /etc/autodivide
+else
+	export DIVSZ=70000
+fi
+if [ ! -f $1.deb ]
+then
+	echo "No such file."
+	exit 2
+fi
+# if [ `getsize $1.deb` -le $DIVSZ ]
+# then
+# 	echo "Dividing unneeded.
+# 	exit 1
+# fi
+dpkg -x $1.deb $1
+dpkg -e $1.deb DEBIAN-$1
+PKGNAME="`getinfo DEBIAN-$1/control Package`"
+PKGVER="`getinfo DEBIAN-$1/control Version`"
+PKGARCH="`getinfo DEBIAN-$1/control Architecture`"
+mkdir -p divide/$1
+export DIRS="`getdir $1`"
+NUM=0
+while havefile $1
+do
+	NUM=`expr $NUM + 1`
+	echo Dividing part $NUM of $1
+	mkdir -p divide/$1/$NUM
+	NOWSZ=0
+	consdir divide/$1/$NUM "$DIRS"
+	FLS="`getfile $1`"
+	for i in $FLS
+	do
+		TF="$1/$i"
+		[ "x$DEBUG" != "x" ] && echo "... $TF ..."
+		TFSZ=`getsize $TF`
+		NOWSZ=`expr $NOWSZ + $TFSZ`
+		[ "x$DEBUG" != "x" ] && echo Now size if $NOWSZ
+		if [ "$NOWSZ" -le "$DIVSZ" ]
+		then
+			mv $1/$i divide/$1/$NUM/$i
+		else
+			break
+		fi
+	done
+done
+pushd divide/$1 1>&2
+	LIST="`echo *`"
+popd 1>&2
+for i in $LIST
+do
+	if [ "$i" != 1 ]
+	then
+		STUBDEP="${STUBDEP}, "
+	fi
+	STUBDEP="${STUBDEP}divide-${PKGNAME}-$i (= ${PKGVER})"
+	mkdir -p divide/$1/$i/DEBIAN
+	echo "Package: divide-${PKGNAME}-$i" > divide/$1/$i/DEBIAN/control
+	echo "Version: ${PKGVER}" >> divide/$1/$i/DEBIAN/control
+	echo "Architecture: ${PKGARCH}" >> divide/$1/$i/DEBIAN/control
+	cat DEBIAN-$1/control | grep ^Depends >> divide/$1/$i/DEBIAN/control
+	echo "Description: ." >> divide/$1/$i/DEBIAN/control
+	echo "Maintainer: autodivide author Eastern Heart <zxd123314@hotmail.com>" >> divide/$1/$i/DEBIAN/control
+	dpkg -b divide/$1/$i && rm -rf divide/$1/$i
+done
+mkdir -p divide/$1/stub
+mv DEBIAN-$1 divide/$1/stub/DEBIAN
+sed -e '/^Depends/d' -i divide/$1/stub/DEBIAN/control
+echo "Depends: $STUBDEP" >> divide/$1/stub/DEBIAN/control
+dpkg -b divide/$1/stub && rm -rf divide/$1/stub
+rm -rf $1
+
+

@@ -1,0 +1,95 @@
+#! /bin/bash
+export ABPF=/usr
+export ABLE=$ABPF/lib/autobuild
+export ARCH=i386
+export MTER="Eastern Heart <zxd123314@hotmail.com>"
+
+if [ -e $ABLE/functions ]
+then
+	. $ABLE/functions
+else
+	# default defines
+	dpkg_getver(){
+#		dpkg -l $1 | grep ^ii | cut -c 5- | cut -d " " -f 1
+		COLUMNS=1 dpkg -l $1 | grep ^ii | cut -c 20- | cut -d " " -f 1
+	}
+	detect_type(){
+		if [ -e configure ]
+		then
+			echo "autotools"
+		elif [ -e CMakeLists.txt ]
+		then
+			echo "cmake"
+		else
+			echo "unsupported"
+		fi
+	}
+	autobuild_autotools(){
+		mkdir -p build && cd build && ../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && make && make DESTDIR=`pwd`/../abdist install && cd ..
+	}
+	autobuild_cmake(){
+                mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr $CMAKE_AFTER && make && make DESTDIR=`pwd`/../abdist install && cd ..
+        }
+	gendep(){
+		FIRST=1
+		for i in $PKGDEP
+		do
+			[ "$FIRST" != "1" ] && printf ", "
+			[ "$FIRST" = "1" ] && FIRST=0
+			printf "$i (>= `dpkg_getver $i`)"
+		done
+	}
+	gen_control(){
+		mkdir -p abdist/DEBIAN && 
+		echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
+		echo "Version: $PKGVER" >> abdist/DEBIAN/control && 
+		echo "Architecture: $ARCH" >> abdist/DEBIAN/control && 
+		( ( [ "x$PKGSEC" != "x" ] && echo "Section: $PKGSEC" >> abdist/DEBIAN/control ) || true ) && 
+		echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
+		echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
+		echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
+		echo "Depends: `gendep`" >> abdist/DEBIAN/control
+	}
+fi
+
+if [ ! -d autobuild ]
+then
+	echo No autobuild directory ^o^
+	exit 1
+fi
+
+if [ -e autobuild/defines ]
+then
+	. autobuild/defines
+else
+	echo "No autobuild/defines :-("
+	exit 1
+fi
+
+if [ "x$ABTYPE" = "x" ]
+then
+	export ABTYPE="`detect_type`"
+fi
+
+if autobuild_$ABTYPE
+then
+	:
+else
+	echo "Build failed..."
+	exit 1
+fi
+
+if [ ! -d abdist ]
+then
+	echo No abdist ^o^
+	exit 1
+fi
+
+gen_control
+
+if [ -d autobuild/override ]
+then
+	cp -r autobuild/override/* abdist
+fi
+
+dpkg -b abdist && dpkg -i abdist.deb
