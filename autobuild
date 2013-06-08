@@ -4,6 +4,13 @@ export ABLE=$ABPF/lib/autobuild
 export ARCH=i386
 export MTER="Eastern Heart <zxd123314@hotmail.com>"
 
+# programs
+
+if [ "x$PYTHON" = "x" ]
+then
+	export PYTHON=python
+fi
+
 if [ -e $ABLE/functions ]
 then
 	. $ABLE/functions
@@ -14,22 +21,69 @@ else
 		COLUMNS=1 dpkg -l $1 | grep ^ii | cut -c 20- | cut -d " " -f 1
 	}
 	detect_type(){
-		if [ -e configure ]
+		if [ -e autobuild/build ]
+                then
+                        echo "self"
+		elif [ -e configure ]
 		then
 			echo "autotools"
 		elif [ -e CMakeLists.txt ]
 		then
 			echo "cmake"
+		elif [ -e autobuild/build ]
+		then
+			echo "self"
+                elif [ -e SConstruct ]
+                then
+                        echo "scons"
+                elif [ -e setup.py ]
+                then
+                        echo "python"
 		else
 			echo "unsupported"
 		fi
 	}
 	autobuild_autotools(){
-		mkdir -p build && cd build && ../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && make && make DESTDIR=`pwd`/../abdist install && cd ..
+		SRCDIR=`pwd`
+		if [ "x$ABSHADOW" = "x" ] 
+		then
+			mkdir -p build &&
+			cd build
+		else 
+			true
+		fi && 
+		$SRCDIR/configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && 
+		make $ABMK $MAKE_AFTER && 
+		make DESTDIR=$SRCDIR/abdist $MAKE_AFTER install && 
+		if [ "x$ABSHADOW" = "x" ] 
+		then 
+			cd ..
+		else
+			true
+		fi
 	}
 	autobuild_cmake(){
-                mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr $CMAKE_AFTER && make && make DESTDIR=`pwd`/../abdist install && cd ..
+                mkdir -p build && 
+		cd build && 
+		cmake .. -DCMAKE_INSTALL_PREFIX=/usr $CMAKE_AFTER && 
+		make $ABMK $MAKE_AFTER && 
+		make DESTDIR=`pwd`/../abdist $MAKE_AFTER install && 
+		cd ..
         }
+	autobuild_self(){
+		bash `pwd`/autobuild/build
+	}
+	autobuild_scons(){
+		scons --prefix=/usr --install-sandbox=`pwd`/abdist install
+	}
+	autobuild_python(){
+		$PYTHON setup.py bdist &&
+		cd dist &&
+		tar xvf *.tar.* &&
+		rm *.tar.* &&
+		cd .. &&
+		mv dist abdist
+	}
 	gendep(){
 		FIRST=1
 		for i in $PKGDEP
@@ -89,7 +143,12 @@ gen_control
 
 if [ -d autobuild/override ]
 then
-	cp -r autobuild/override/* abdist
+	cp -r --preserve=all autobuild/override/* abdist
 fi
+
+# remove dir
+
+rm -f abdist/usr/share/info/dir
+rm -f abdist/usr/info/dir
 
 dpkg -b abdist && dpkg -i abdist.deb
