@@ -169,9 +169,14 @@ alternative(){
 	while [ "x$1" != "x" ]
 	do
 		echo "update-alternatives --install $1 `basename $1` $2" >> abdist/DEBIAN/postinst
-		echo "update-alternatives --remove `basename $1` $1" >> abdist/DEBIAM/postrm
+		echo "update-alternatives --remove `basename $1` $1" >> abdist/DEBIAN/postrm
 	done
 }
+
+if [ -e autobuild/alternatives ]
+then
+	. autobuild/alternatives
+fi
 
 dpkg -b abdist && dpkg -i abdist.deb
 
