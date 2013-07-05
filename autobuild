@@ -139,16 +139,39 @@ then
 	exit 1
 fi
 
-gen_control
-
 if [ -d autobuild/override ]
 then
 	cp -r --preserve=all autobuild/override/* abdist
 fi
+
+# Begin plugins
 
 # remove dir
 
 rm -f abdist/usr/share/info/dir
 rm -f abdist/usr/info/dir
 
+# End plugins
+
+if [ ! -e autobuild/subpkgs ]
+then
+
+gen_control
+
+touch abdist/DEBIAN/postinst
+chmod 755 abdist/DEBIAN/postinst
+
+touch abdist/DEBIAN/prerm
+chmod 755 abdist/DEBIAN/prerm
+
+
+alternative(){
+	while [ "x$1" != "x" ]
+	do
+		echo "update-alternatives --install $1 `basename $1` $2" >> abdist/DEBIAN/postinst
+		echo "update-alternatives --remove `basename $1` $1" >> abdist/DEBIAM/postrm
+}
+
 dpkg -b abdist && dpkg -i abdist.deb
+
+fi
