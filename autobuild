@@ -1,8 +1,10 @@
 #! /bin/bash
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
-export ARCH=i386
+export ARCH=amd64
 export MTER="Eastern Heart <zxd123314@hotmail.com>"
+
+export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
 
@@ -102,7 +104,12 @@ else
 		echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
 		echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
 		echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
-		echo "Depends: `gendep`" >> abdist/DEBIAN/control
+		if [ "x$PKGDEP" != "x" ]
+		then 
+			echo "Depends: `gendep`" >> abdist/DEBIAN/control
+		else
+			true
+		fi
 	}
 fi
 
@@ -125,6 +132,15 @@ then
 	export ABTYPE="`detect_type`"
 fi
 
+if [ -e autobuild/patch ]
+then
+	if [ ! -e .patch ]
+	then
+		. autobuild/patch
+		touch .patch
+	fi
+fi
+
 if autobuild_$ABTYPE
 then
 	:
@@ -142,6 +158,11 @@ fi
 if [ -d autobuild/override ]
 then
 	cp -r --preserve=all autobuild/override/* abdist
+fi
+
+if [ -e autobuild/beyond ]
+then
+	. autobuild/beyond
 fi
 
 # Begin plugins
@@ -168,8 +189,11 @@ chmod 755 abdist/DEBIAN/prerm
 alternative(){
 	while [ "x$1" != "x" ]
 	do
-		echo "update-alternatives --install $1 `basename $1` $2" >> abdist/DEBIAN/postinst
-		echo "update-alternatives --remove `basename $1` $1" >> abdist/DEBIAN/postrm
+		echo "update-alternatives --install $1 `basename $1` $2 $3 " >> abdist/DEBIAN/postinst
+		echo "update-alternatives --remove `basename $1` $2" >> abdist/DEBIAN/prerm
+		shift
+		shift
+		shift
 	done
 }
 
@@ -178,6 +202,6 @@ then
 	. autobuild/alternatives
 fi
 
-dpkg -b abdist && dpkg -i abdist.deb
+dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 
 fi
