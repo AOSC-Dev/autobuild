@@ -2,11 +2,22 @@
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
-export MTER="Put your name here please."
+export MTER="Jeff Bai <jeffbaichina@gmail.com>"
 
 export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
+# Standard announcements
+echo "Developers:"
+echo "* This is the upstream of :Next, DO NOT ever try to use binaries/packages from other distros!"
+echo "* Don't forget to upload the autobuild archive with the package!"
+echo "* Never try to do something unnecessary, as they won't be accepted!"
+echo " "
+echo "So seriously, quality control:"
+echo "1. The packages should be built from source, when they are available, packages should be uploaded along with the autobuild archive;"
+echo "2. It's not allowed to re-upload the package(s) without a confirmed bug report;"
+echo "3. Try your best to obey the quality control."
+read -sn 1 -p "Press any key to continue..."
 
 if [ "x$PYTHON" = "x" ]
 then
@@ -163,6 +174,12 @@ fi
 if [ -e autobuild/beyond ]
 then
 	. autobuild/beyond
+fi
+
+# Experimental linking support
+if [ -e autobuild/links ]
+then
+	. autobuild/links
 fi
 
 # Begin plugins
