@@ -2,7 +2,7 @@
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
-export MTER="Eastern Heart <zxd123314@hotmail.com>"
+export MTER="Put your name here please."
 
 export DPKGDEBFLAGS="-Zxz -z9"
 
