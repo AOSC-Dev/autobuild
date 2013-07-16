@@ -9,7 +9,6 @@ export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
 
-
 if [ "x$PYTHON" = "x" ]
 then
 	export PYTHON=python
@@ -135,14 +134,13 @@ else
 	exit 1
 fi
 
-# get all necessary dependencies
+# get necessary dependencies defined in define before build
 if dpkg -l $PKGDEPS
 then
         true
 else
         apt-get install $PKGDEPS
 fi
-
 
 if [ "x$ABTYPE" = "x" ]
 then
