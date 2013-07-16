@@ -9,13 +9,6 @@ export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
 
-# get all necessary dependencies
-if dpkg -l $PKGDEPS
-then
-        true
-else
-        apt-get install $PKGDEPS
-fi
 
 if [ "x$PYTHON" = "x" ]
 then
@@ -141,6 +134,15 @@ else
 	echo "No autobuild/defines :-("
 	exit 1
 fi
+
+# get all necessary dependencies
+if dpkg -l $PKGDEPS
+then
+        true
+else
+        apt-get install $PKGDEPS
+fi
+
 
 if [ "x$ABTYPE" = "x" ]
 then
