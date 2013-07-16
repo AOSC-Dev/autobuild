@@ -3,10 +3,19 @@ export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
 export MTER="Eastern Heart <zxd123314@hotmail.com>"
+# the author... But maybe we should make it more generic right?
 
 export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
+
+# get all necessary dependencies
+if dpkg -l $PKGDEPS
+then
+        true
+else
+        apt-get install $PKGDEPS
+fi
 
 if [ "x$PYTHON" = "x" ]
 then
