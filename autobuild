@@ -140,11 +140,11 @@ else
 fi
 
 # get necessary dependencies defined in define before build
-if dpkg -l $PKGDEPS
+if dpkg -l $PKGDEP
 then
         true
 else
-        apt-get install $PKGDEPS
+        apt-get install $PKGDEP
 fi
 
 if [ "x$ABTYPE" = "x" ]
