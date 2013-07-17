@@ -99,7 +99,12 @@ else
 		do
 			[ "$FIRST" != "1" ] && printf ", "
 			[ "$FIRST" = "1" ] && FIRST=0
-			printf "$i (>= `dpkg_getver $i`)"
+			if [ "x`echo $i | cut -d '|' -f 1`" = "x$i" ]
+			then
+				printf "$i (>= `dpkg_getver $i`)"
+			else
+				printf "$i"
+			fi
 		done
 	}
 	gen_control(){
