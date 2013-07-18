@@ -144,6 +144,7 @@ if dpkg -l $PKGDEP
 then
         true
 else
+        apt-get update 
         apt-get install $PKGDEP
 fi
 
