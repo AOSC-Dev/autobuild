@@ -20,3 +20,6 @@ What's the point?
 We need your help to imagine and code!
 
 Pull requests are welcomed.
+
+Developer:   
+EasternHeart <<heartldev@gmail.com>>   Main developer.
