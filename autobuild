@@ -107,6 +107,33 @@ else
 			fi
 		done
 	}
+	genrecom(){
+		FIRST=1
+		for i in $PKGRECOM
+		do
+			[ "$FIRST" != "1" ] && printf ", "
+			[ "$FIRST" = "1" ] && FIRST=0
+			if [ "x`echo $i | cut -d '|' -f 1`" = "x$i" ]
+			then
+				printf "$i (>= `dpkg_getver $i`)"
+			else
+				printf "$i"
+			fi
+		done
+	}
+	genrep(){
+		FIRST=1
+		for i in $PKGREP
+		do
+			[ "$FIRST" != "1" ] && printf ", "
+			[ "$FIRST" = "1" ] && FIRST=0
+			if [ "x`echo $i | cut -d '|' -f 1`" = "x$i" ]
+			then
+				printf "$i (<= `dpkg_getver $i`)"
+			else
+				printf "$i"
+			fi
+		done
 	gen_control(){
 		mkdir -p abdist/DEBIAN && 
 		echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
@@ -121,6 +148,18 @@ else
 			echo "Depends: `gendep`" >> abdist/DEBIAN/control
 		else
 			true
+		fi &&
+		if [ "x$PKGRECOM" != "x" ]
+		then 
+			echo "Recommends: `genrecom`" >> abdist/DEBIAN/control
+		else
+			true
+		fi &&
+		if [ "x$PKGREP" != "x" ]
+		then 
+			echo "Replaces: `genrep`" >> abdist/DEBIAN/control
+		else
+			true
 		fi
 	}
 fi
@@ -128,6 +167,7 @@ fi
 if [ ! -d autobuild ]
 then
 	echo No autobuild directory ^o^
+	# what's the point for the emotion character...
 	exit 1
 fi
 
@@ -140,12 +180,13 @@ else
 fi
 
 # get necessary dependencies defined in define before build
-if dpkg -l $PKGDEP
+# BUILDDEP+PKGDEP=***REAL*** Needed stuff.
+if dpkg -l $BUILDDEP $PKGDEP
 then
         true
 else
         apt-get update 
-        apt-get install $PKGDEP
+        apt-get install $BUILDDEP $PKGDEP
 fi
 
 if [ "x$ABTYPE" = "x" ]
