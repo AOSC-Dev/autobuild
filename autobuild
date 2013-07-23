@@ -113,12 +113,7 @@ else
 		do
 			[ "$FIRST" != "1" ] && printf ", "
 			[ "$FIRST" = "1" ] && FIRST=0
-			if [ "x`echo $i | cut -d '|' -f 1`" = "x$i" ]
-			then
-				printf "$i (>= `dpkg_getver $i`)"
-			else
-				printf "$i"
-			fi
+			printf "$i"
 		done
 	}
 	genrep(){
@@ -127,13 +122,27 @@ else
 		do
 			[ "$FIRST" != "1" ] && printf ", "
 			[ "$FIRST" = "1" ] && FIRST=0
-			if [ "x`echo $i | cut -d '|' -f 1`" = "x$i" ]
-			then
-				printf "$i (<= `dpkg_getver $i`)"
-			else
-				printf "$i"
-			fi
+			printf "$i"
 		done
+	}
+        genconfl(){
+                FIRST=1
+                for i in $PKGCONFL
+                do
+                        [ "$FIRST" != "1" ] && printf ", "
+                        [ "$FIRST" = "1" ] && FIRST=0
+                        printf "$i"
+                done    
+        }
+        genprov(){
+                FIRST=1
+                for i in $PKGPROV
+                do
+                        [ "$FIRST" != "1" ] && printf ", "
+                        [ "$FIRST" = "1" ] && FIRST=0
+                        printf "$i"
+                done    
+        }
 	gen_control(){
 		mkdir -p abdist/DEBIAN && 
 		echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
@@ -161,6 +170,18 @@ else
 		else
 			true
 		fi
+		if [ "x$PKGCONFL" != "x" ]
+                then
+                        echo "Conflicts: `genconfl`" >> abdist/DEBIAN/control
+                else
+                        true
+                fi
+                if [ "x$PKGPROV" != "x" ]
+                then
+                        echo "Provides: `genprov`" >> abdist/DEBIAN/control
+                else
+                        true
+                fi
 	}
 fi
 
@@ -263,6 +284,8 @@ if [ -e autobuild/alternatives ]
 then
 	. autobuild/alternatives
 fi
+
+chmod a-s abdist/DEBIAN
 
 dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 
