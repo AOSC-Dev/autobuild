@@ -287,6 +287,17 @@ fi
 
 chmod a-s abdist/DEBIAN
 
+for i in `find abdist`
+do
+	if [ -u $i ]
+	then
+		chown root:root $i
+		chmod u+s $i
+	else
+		chown root:root $i
+	fi
+done
+
 dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 
 fi
