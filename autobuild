@@ -298,6 +298,17 @@ do
 	fi
 done
 
+if [ -e abdist ] 
+then
+	strip --strip-unneeded --strip-debug `find abdist/opt/{bin,sbin}`
+	strip --strip-debug `find abdist/opt/*/{lib,lib64}`
+	strip --strip-unneeded --strip-debug `find abdist/{bin,sbin,usr/sbin,usr/bin}`
+	strip --strip-debug `find abdist/{lib,lib64,usr/lib,usr/lib64}`
+else
+	echo "You are not supposed to reach here right?"
+	echo "And there are nothing to strip, YEAH!!!"
+fi
+
 dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 
 fi
