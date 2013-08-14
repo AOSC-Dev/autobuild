@@ -2,7 +2,7 @@
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
-export MTER="Eastern Heart <zxd123314@hotmail.com>"
+export MTER="Packager <noboby@whatsoever.com>"
 # the author... But maybe we should make it more generic right?
 
 export DPKGDEBFLAGS="-Zxz -z9"
@@ -308,6 +308,9 @@ else
 	echo "You are not supposed to reach here right?"
 	echo "And there are nothing to strip, YEAH!!!"
 fi
+
+echo "Leaving some useful info for the packager after you..."
+echo "$SRCLINK" > autobuild/source-package-link
 
 dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 
