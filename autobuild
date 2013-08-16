@@ -207,7 +207,7 @@ then
         true
 else
         apt-get update 
-        apt-get install $BUILDDEP $PKGDEP
+        apt-get install --force-yes $BUILDDEP $PKGDEP
 fi
 
 if [ "x$ABTYPE" = "x" ]
