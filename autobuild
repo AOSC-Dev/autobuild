@@ -3,7 +3,7 @@ export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
 export MTER="`cat /etc/maintainer`"
-# the author... But maybe we should make it more generic right?
+# tries to obtain $MTER from a specified config file
 
 export DPKGDEBFLAGS="-Zxz -z9"
 
