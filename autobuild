@@ -2,7 +2,7 @@
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
-export MTER="Packager <noboby@whatsoever.com>"
+export MTER="`cat /etc/maintainer`"
 # the author... But maybe we should make it more generic right?
 
 export DPKGDEBFLAGS="-Zxz -z9"
