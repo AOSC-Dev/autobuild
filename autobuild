@@ -11,7 +11,7 @@ export DPKGDEBFLAGS="-Zxz -z9"
 
 if [ "x$PYTHON" = "x" ]
 then
-	export PYTHON=python
+	export PYTHON=/usr/bin/python
 fi
 
 if [ -e $ABLE/functions ]
@@ -300,10 +300,13 @@ done
 
 if [ -e abdist ] 
 then
+if [ "x$ABSTRIP" != "xn" ]
+then
 	strip --strip-unneeded --strip-debug `find abdist/opt/{bin,sbin}`
 	strip --strip-debug `find abdist/opt/*/{lib,lib64}`
 	strip --strip-unneeded --strip-debug `find abdist/{bin,sbin,usr/sbin,usr/bin}`
 	strip --strip-debug `find abdist/{lib,lib64,usr/lib,usr/lib64}`
+fi
 else
 	echo "You are not supposed to reach here right?"
 	echo "And there are nothing to strip, YEAH!!!"
