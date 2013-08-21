@@ -80,7 +80,7 @@ else
 		bash `pwd`/autobuild/build
 	}
 	autobuild_scons(){
-		scons --prefix=/usr --install-sandbox=`pwd`/abdist install
+		scons $SCONS_AFTER --prefix=/usr --install-sandbox=`pwd`/abdist install
 	}
 	autobuild_python(){
 		$PYTHON setup.py bdist &&
