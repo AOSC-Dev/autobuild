@@ -255,7 +255,7 @@ fi
 rm -f abdist/usr/share/info/dir
 rm -f abdist/usr/info/dir
 
-# End plugins
+# End pluginsno
 
 if [ ! -e autobuild/subpkgs ]
 then
@@ -298,8 +298,6 @@ do
 	fi
 done
 
-if [ -e abdist ] 
-then
 if [ "x$ABSTRIP" != "xn" ]
 then
 	strip --strip-unneeded --strip-debug `find abdist/opt/{bin,sbin}`
@@ -315,6 +313,7 @@ fi
 echo "Leaving some useful info for the packager after you..."
 echo "$SRCLINK" > autobuild/source-package-link
 
-dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
-
+if [ -e abdist ] 
+then
+	dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
 fi
