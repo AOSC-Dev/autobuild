@@ -51,3 +51,4 @@ genprov(){
                 printf "$i"
        done    
 }
+export -p gendep genprov genconfl genrep genrecom 
