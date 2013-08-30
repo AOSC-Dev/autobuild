@@ -98,7 +98,7 @@ rm -f abdist/usr/info/dir
 if [ ! -e autobuild/subpkgs ]
 then
 
-gen_control
+PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES gen_control
 
 touch abdist/DEBIAN/postinst
 chmod 755 abdist/DEBIAN/postinst
