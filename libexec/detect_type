@@ -1,5 +1,4 @@
 #! /bin/bash
-detect_type(){
 	if [ -e autobuild/build ]
 	then
 		echo "self"
@@ -21,4 +20,3 @@ detect_type(){
 	else
 		echo "unsupported"
 	fi
-}
