@@ -1,0 +1,39 @@
+#! /bin/bash
+		mkdir -p abdist/DEBIAN && 
+		echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
+		echo "Version: $PKGVER" >> abdist/DEBIAN/control && 
+		echo "Architecture: $ARCH" >> abdist/DEBIAN/control && 
+		( ( [ "x$PKGSEC" != "x" ] && echo "Section: $PKGSEC" >> abdist/DEBIAN/control ) || true ) && 
+		echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
+		echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
+		echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
+		if [ "x$PKGDEP" != "x" ]
+		then 
+			echo "Depends: `gendep`" >> abdist/DEBIAN/control
+		else
+			true
+		fi &&
+		if [ "x$PKGRECOM" != "x" ]
+		then 
+			echo "Recommends: `genrecom`" >> abdist/DEBIAN/control
+		else
+			true
+		fi &&
+		if [ "x$PKGREP" != "x" ]
+		then 
+			echo "Replaces: `genrep`" >> abdist/DEBIAN/control
+		else
+			true
+		fi
+		if [ "x$PKGCONFL" != "x" ]
+                then
+                        echo "Conflicts: `genconfl`" >> abdist/DEBIAN/control
+                else
+                        true
+                fi
+                if [ "x$PKGPROV" != "x" ]
+                then
+                        echo "Provides: `genprov`" >> abdist/DEBIAN/control
+                else
+                        true
+                fi
