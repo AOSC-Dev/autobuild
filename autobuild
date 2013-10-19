@@ -92,6 +92,11 @@ fi
 rm -f abdist/usr/share/info/dir
 rm -f abdist/usr/info/dir
 
+# remove perl info
+
+rm -f /usr/lib/perl5/*/perllocal.pod
+rm -f /usr/lib/perl5/*/*/perllocal.pod
+
 # End plugins
 
 if [ ! -e autobuild/subpkgs ]
