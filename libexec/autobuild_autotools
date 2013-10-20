@@ -1,4 +1,5 @@
 #! /bin/bash
+. autobuild/defines
 SRCDIR=`pwd`
 if [ "x$ABSHADOW" = "x" ] 
 then
