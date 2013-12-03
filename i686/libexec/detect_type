@@ -1,0 +1,22 @@
+#! /bin/bash
+	if [ -e autobuild/build ]
+	then
+		echo "self"
+	elif [ -e configure ]
+	then
+		echo "autotools"
+	elif [ -e CMakeLists.txt ]
+	then
+		echo "cmake"
+	elif [ -e autobuild/build ]
+	then
+		echo "self"
+	elif [ -e setup.py ]
+	then
+		echo "python"
+	elif [ -e Makefile.PL ]
+	then
+		echo "perl"
+	else
+		echo "unsupported"
+	fi

@@ -1,0 +1,8 @@
+#! /bin/bash
+. autobuild/defines
+mkdir -p build && 
+cd build && 
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release $CMAKE_AFTER && 
+make $ABMK $MAKE_AFTER && 
+make DESTDIR=`pwd`/../abdist $MAKE_AFTER install && 
+cd ..

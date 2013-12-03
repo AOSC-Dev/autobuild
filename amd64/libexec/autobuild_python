@@ -1,0 +1,7 @@
+#! /bin/bash
+$PYTHON setup.py bdist &&
+cd dist &&
+tar xvf *.tar.* &&
+rm *.tar.* &&
+cd .. &&
+mv dist abdist
