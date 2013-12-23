@@ -2,9 +2,10 @@
 dpkg_getver(){
         COLUMNS=1 dpkg -l $1 | grep ^ii | cut -c 20- | cut -d " " -f 1
 
-while read line; do
-    echo $line
-done < autobuild/defines
+export PKGREP="`cat autobuild/defines | grep PKGREP`"
+export PKGRECOM="`cat autobuild/defines | grep PKGRECOM`"
+export PKGPROV="`cat autobuild/defines | grep PKGPROV`"
+export PKGCONFL="`cat autobuild/defines | grep PKGCONFL`"
 
 }
 gendep(){
