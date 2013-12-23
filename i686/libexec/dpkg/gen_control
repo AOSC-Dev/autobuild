@@ -16,7 +16,7 @@ gendep(){
 			fi
 		done
 	}
-	genrecom(){
+genrecom(){
 		FIRST=1
 		for i in $PKGRECOM
 		do
@@ -25,7 +25,7 @@ gendep(){
 			printf "$i"
 		done
 	}
-	genrep(){
+genrep(){
 		FIRST=1
 		for i in $PKGREP
 		do
@@ -34,7 +34,7 @@ gendep(){
 			printf "$i"
 		done
 	}
-        genconfl(){
+genconfl(){
                 FIRST=1
                 for i in $PKGCONFL
                 do
@@ -44,49 +44,53 @@ gendep(){
                 done    
         }
 genprov(){
-       FIRST=1
-       for i in $PKGPROV
-       do
-                [ "$FIRST" != "1" ] && printf ", "
-                [ "$FIRST" = "1" ] && FIRST=0
-                printf "$i"
-       done    
-}
-		mkdir -p abdist/DEBIAN && 
-		echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
-		echo "Version: $PKGVER" >> abdist/DEBIAN/control && 
-		echo "Architecture: $ARCH" >> abdist/DEBIAN/control && 
-		( ( [ "x$PKGSEC" != "x" ] && echo "Section: $PKGSEC" >> abdist/DEBIAN/control ) || true ) && 
-		echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
-		echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
-		echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
-		if [ "x$PKGDEP" != "x" ]
-		then 
-			echo "Depends: `gendep`" >> abdist/DEBIAN/control
-		else
-			true
-		fi &&
-		if [ "x$PKGRECOM" != "x" ]
-		then 
-			echo "Recommends: `genrecom`" >> abdist/DEBIAN/control
-		else
-			true
-		fi &&
-		if [ "x$PKGREP" != "x" ]
-		then 
-			echo "Replaces: `genrep`" >> abdist/DEBIAN/control
-		else
-			true
-		fi
-		if [ "x$PKGCONFL" != "x" ]
-                then
-                        echo "Conflicts: `genconfl`" >> abdist/DEBIAN/control
-                else
-                        true
-                fi
-                if [ "x$PKGPROV" != "x" ]
-                then
-                        echo "Provides: `genprov`" >> abdist/DEBIAN/control
-                else
-                        true
-                fi
+		FIRST=1
+		for i in $PKGPROV
+       		do
+        	        [ "$FIRST" != "1" ] && printf ", "
+        	        [ "$FIRST" = "1" ] && FIRST=0
+		printf "$i"
+		done    
+	}
+mkdir -p abdist/DEBIAN && 
+echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
+echo "Version: $PKGVER" >> abdist/DEBIAN/control && 
+echo "Architecture: $ARCH" >> abdist/DEBIAN/control && 
+( ( [ "x$PKGSEC" != "x" ] && echo "Section: $PKGSEC" >> abdist/DEBIAN/control ) || true ) && 
+echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
+echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
+echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
+echo "Conflicts: $PKGCONFL" >> abdist/DEBIAN/control 
+echo "Replaces: $PKGREP" >> abdist/DEBIAN/control 
+echo "Recommends: $PKGRECOM" >> abdist/DEBIAN/control 
+echo "Provides: $PKGPROV" >> abdist/DEBIAN/control 
+if [ "x$PKGDEP" != "x" ]
+	then 
+		echo "Depends: `gendep`" >> abdist/DEBIAN/control
+	else
+		true
+fi &&
+if [ "x$PKGRECOM" != "x" ]
+	then 
+		echo "Recommends: `genrecom`" >> abdist/DEBIAN/control
+	else
+		true
+fi &&
+if [ "x$PKGREP" != "x" ]
+	then 
+		echo "Replaces: `genrep`" >> abdist/DEBIAN/control
+	else
+		true
+fi
+if [ "x$PKGCONFL" != "x" ]
+	then
+		echo "Conflicts: `genconfl`" >> abdist/DEBIAN/control
+	else
+		true
+fi
+if [ "x$PKGPROV" != "x" ]
+	then
+		echo "Provides: `genprov`" >> abdist/DEBIAN/control
+	else
+		true
+fi
