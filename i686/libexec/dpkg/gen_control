@@ -62,10 +62,6 @@ echo "Architecture: $ARCH" >> abdist/DEBIAN/control &&
 echo "Maintainer: $MTER" >> abdist/DEBIAN/control &&
 echo "Installed-Size: `du -s abdist | cut -f 1`" >> abdist/DEBIAN/control && 
 echo "Description: $PKGDES" >> abdist/DEBIAN/control && 
-echo "Conflicts: $PKGCONFL" >> abdist/DEBIAN/control 
-echo "Replaces: $PKGREP" >> abdist/DEBIAN/control 
-echo "Recommends: $PKGRECOM" >> abdist/DEBIAN/control 
-echo "Provides: $PKGPROV" >> abdist/DEBIAN/control 
 if [ "x$PKGDEP" != "x" ]
 	then 
 		echo "Depends: `gendep`" >> abdist/DEBIAN/control
