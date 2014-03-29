@@ -1,4 +1,5 @@
 #! /bin/bash
+SRCDIR=`pwd`
 . autobuild/defines
 if [-e autobuild/patch]
 then

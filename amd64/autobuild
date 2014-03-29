@@ -64,8 +64,9 @@ fi
 if autobuild_$ABTYPE
 then
 	:
-else if ["x$ABTYPE"="xbuild"] #Seems to be a common error when writing defines. So use this as a test and also an alternative way.
+else if ["x$ABTYPE"="xbuild"] # Seems to be a common error when writing defines. So use this as a test and also an alternative way.
 	then
+		SRCDIR=`pwd`
 		. autobuild/defines
 		if [-e autobuild/patch]
 		then
