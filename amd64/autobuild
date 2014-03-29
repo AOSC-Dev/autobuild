@@ -64,9 +64,18 @@ fi
 if autobuild_$ABTYPE
 then
 	:
-else
-	echo "Build failed..."
-	exit 1
+else if ["x$ABTYPE"="xbuild"] #Seems to be a common error when writing defines. So use this as a test and also an alternative way.
+	then
+		. autobuild/defines
+		if [-e autobuild/patch]
+		then
+			. autobuild/patch
+		fi
+		. autobuild/build
+	else
+		echo "Build failed..."
+		exit 1
+	fi
 fi
 
 if [ ! -d abdist ]

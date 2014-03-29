@@ -1,0 +1,7 @@
+#! /bin/bash
+. autobuild/defines
+if [-e autobuild/patch]
+then
+	. autobuild/patch
+fi
+. autobuild/build
