@@ -1,0 +1,23 @@
+.\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
+.\" Goto https://github.com/AOSC-Dev/autobuild/wiki for the latest updates, and also update the manpage when necessary.
+.\" For info on creating a manpage, see http://www.cyberciti.biz/faq/linux-unix-creating-a-manpage/ .
+.TH man 1 "30 Mar 2014" "1.0" "autobuild man page"
+.SH NAME
+autobuild \- Builds and packs a software.
+.SH SYNOPSIS
+
+.SH DESCRIPTION
+
+.SH defines
+
+.SH build
+
+.SH patch
+
+.SH beyond
+
+.SH SEE ALSO
+
+.SH BUGS
+
+.SH AUTHOR
