@@ -1,13 +1,16 @@
 .\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
 .\" Goto https://github.com/AOSC-Dev/autobuild/wiki for the latest updates, and also update the manpage when necessary.
-.\" For info on creating a manpage, see http://www.cyberciti.biz/faq/linux-unix-creating-a-manpage/ .
+.\" For info on creating a manpage, see http://www.schweikhardt.net/man_page_howto.html.
 .TH man 1 "30 Mar 2014" "1.0" "autobuild man page"
 .SH NAME
 autobuild \- Builds and packs a software.
-.SH SYNOPSIS
-
 .SH DESCRIPTION
+A tool for building a software package from source,
+it supports autotools (./configure stuff), cmake, scons, py and pl internally. 
 
+After putting autobuild/define file in the source tree,
+use the autobuild command to see how the source code is built into binaries,
+then a .deb package. That's cool.
 .SH defines
 
 .SH build
@@ -16,8 +19,9 @@ autobuild \- Builds and packs a software.
 
 .SH beyond
 
+.SH AUTHOR
+
 .SH SEE ALSO
 
 .SH BUGS
 
-.SH AUTHOR
