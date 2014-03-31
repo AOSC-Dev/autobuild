@@ -53,6 +53,15 @@ genprov(){
 		printf "$i"
 		done    
 	}
+genbreak(){
+		FIRST=1
+		for i in $PKGBREAK
+		do
+			[ "$FIRST" != "1" ] && printf ", "
+			[ "$FIRST" = "1" ] && FIRST=0
+		done
+	}
+			
 mkdir -p abdist/DEBIAN && 
 echo "Package: $PKGNAME" > abdist/DEBIAN/control && 
 echo "Version: $PKGVER" >> abdist/DEBIAN/control && 
@@ -88,6 +97,12 @@ fi
 if [ "x$PKGPROV" != "x" ]
 	then
 		echo "Provides: `genprov`" >> abdist/DEBIAN/control
+	else
+		true
+fi
+if [ "x$PKGBREAK" != "x" ]
+	then
+		echo "Breaks: `genbreak`" >> abdist/DEBIAN/control
 	else
 		true
 fi
