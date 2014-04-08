@@ -27,15 +27,15 @@ Extra flags to pass to
 .IP "ARCH= [ amd64 | i686 | arm | ... ]"
 Only affects the dpkg control file.
 .IP "PKGNAME=name"
-.IP "PKGVER=x.y.z
+.IP "PKGVER=x.y.z"
 .IP "PKGSEC=section
-.IP "PKGDEP="depend1 dep2"
-.IP "PKGRECOM="recom1 recom2"
-.IP "PKGREP="rep1 rep2"
-.IP "PKGCONFL="confl1 confl2"
-.IP "PKGBRK="break1 break2" 
-.IP "PKGPROV="provide1 provide2"
-.IP "PKGDES="Description"
+.IP "PKGDEP=\"depend1 dep2\""
+.IP "PKGRECOM=\"recom1 recom2\""
+.IP "PKGREP=\"rep1 rep2\""
+.IP "PKGCONFL=\"confl1 confl2\""
+.IP "PKGBRK=\"break1 break2\"" 
+.IP "PKGPROV=\"provide1 provide2\""
+.IP "PKGDES=\"Description\""
 .SH build
 
 .SH patch
