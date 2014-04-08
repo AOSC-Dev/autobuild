@@ -3,7 +3,8 @@
 .\" For info on creating a manpage, see http://www.schweikhardt.net/man_page_howto.html.
 .TH man 1 "30 Mar 2014" "1.0" "autobuild man page"
 .SH NAME
-autobuild \- Builds and packs a software.
+.B autobuild 
+\- Builds and packs a software.
 .SH DESCRIPTION
 A tool for building a software package from source,
 it supports autotools (./configure stuff), cmake, scons, py and pl internally. 
@@ -11,8 +12,30 @@ it supports autotools (./configure stuff), cmake, scons, py and pl internally.
 After putting autobuild/define file in the source tree,
 use the autobuild command to see how the source code is built into binaries,
 then a .deb package. That's cool.
-.SH defines
 
+The following chapters are about shell-based config files.
+.SH defines
+.IP "ABTYPE= [ autobuild | cmake | scons | self | python | perl ]
+Defines package type.
+.IP "ABSHADOW= [ yes | no ]"
+Defines if autobuild should build the package in
+a seperate directory.   Default is
+.B yes .
+.IP "ABMK="
+Extra flags to pass to 
+.B make .
+.IP "ARCH= [ amd64 | i686 | arm | ... ]"
+Only affects the dpkg control file.
+.IP "PKGNAME=name"
+.IP "PKGVER=x.y.z
+.IP "PKGSEC=section
+.IP "PKGDEP="depend1 dep2"
+.IP "PKGRECOM="recom1 recom2"
+.IP "PKGREP="rep1 rep2"
+.IP "PKGCONFL="confl1 confl2"
+.IP "PKGBRK="break1 break2" 
+.IP "PKGPROV="provide1 provide2"
+.IP "PKGDES="Description"
 .SH build
 
 .SH patch
