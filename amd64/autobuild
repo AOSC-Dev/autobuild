@@ -4,7 +4,7 @@ export ABLE=$ABPF/lib/autobuild
 export ARCH=amd64
 export MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
-
+export DEBFILE=$echo("$PKGNAME"_"$PKGVER".deb)
 export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
@@ -129,6 +129,5 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-dpkg-deb $DPKGDEBFLAGS -b abdist && dpkg -i abdist.deb
-
+dpkg-deb $DPKGDEBFLAGS -b abdist $DEBFILE && dpkg -i $DEBFILE
 fi
