@@ -1,13 +1,15 @@
-.\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
+ .\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
 .\" Goto https://github.com/AOSC-Dev/autobuild/wiki for the latest updates, and also update the manpage when necessary.
 .\" For info on creating a manpage, see http://www.schweikhardt.net/man_page_howto.html.
+.\" See Also /usr/share/man/man7/groff.7
 .TH man 1 "30 Mar 2014" "1.0" "autobuild man page"
 .SH NAME
 .B autobuild 
 \- Builds and packs a software.
 .SH DESCRIPTION
-A tool for building a software package from source,
-it supports autotools (./configure stuff), cmake, scons, py and pl internally. 
+A tool for building a software package from source 
+which supports autotools (./configure stuff),
+cmake, scons, py and pl internally. 
 
 After putting autobuild/define file in the source tree,
 use the autobuild command to see how the source code is built into binaries,
@@ -29,13 +31,13 @@ Only affects the dpkg control file.
 .IP "PKGNAME=name"
 .IP "PKGVER=x.y.z"
 .IP "PKGSEC=section
-.IP "PKGDEP=\"depend1 dep2\""
-.IP "PKGRECOM=\"recom1 recom2\""
-.IP "PKGREP=\"rep1 rep2\""
-.IP "PKGCONFL=\"confl1 confl2\""
-.IP "PKGBRK=\"break1 break2\"" 
-.IP "PKGPROV=\"provide1 provide2\""
-.IP "PKGDES=\"Description\""
+.IP "PKGDEP=\" depend1 dep2\" "
+.IP "PKGRECOM=\" recom1 recom2\" "
+.IP "PKGREP=\" rep1 rep2\" "
+.IP "PKGCONFL=\" confl1 confl2\" "
+.IP "PKGBRK=\" break1 break2\" " 
+.IP "PKGPROV=\" provide1 provide2\" "
+.IP "PKGDES=\" Description\" "
 .SH build
 
 .SH patch
@@ -45,6 +47,6 @@ Only affects the dpkg control file.
 .SH AUTHOR
 
 .SH SEE ALSO
-
+Use The Source, Luke: https://github.com/AOSC-Dev/autobuild
 .SH BUGS
 
