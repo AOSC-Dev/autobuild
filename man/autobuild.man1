@@ -1,11 +1,10 @@
- .\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
+.\" manpage for autobuild, the automatic build-n-pack script for AnthonOS.
 .\" Goto https://github.com/AOSC-Dev/autobuild/wiki for the latest updates, and also update the manpage when necessary.
 .\" For info on creating a manpage, see http://www.schweikhardt.net/man_page_howto.html.
 .\" See Also /usr/share/man/man7/groff.7
 .TH man 1 "30 Mar 2014" "1.0" "autobuild man page"
 .SH NAME
-.B autobuild 
-\- Builds and packs a software.
+.B autobuild \- Builds and packs a software.
 .SH DESCRIPTION
 A tool for building a software package from source 
 which supports autotools (./configure stuff),
@@ -31,6 +30,7 @@ Only affects the dpkg control file.
 .IP "PKGNAME=name"
 .IP "PKGVER=x.y.z"
 .IP "PKGSEC=section
+.\" HELP!
 .IP "PKGDEP=\" depend1 dep2\" "
 .IP "PKGRECOM=\" recom1 recom2\" "
 .IP "PKGREP=\" rep1 rep2\" "
@@ -39,9 +39,19 @@ Only affects the dpkg control file.
 .IP "PKGPROV=\" provide1 provide2\" "
 .IP "PKGDES=\" Description\" "
 .SH build
-
+Used to customize the build process. Used only when
+.B ABTYPE
+is set to
+.B self .
+You may have to define some processes yourself.
+.B Use the source
+to help you.
 .SH patch
-
+A set of commands that patches the source code. Runs before building.
+It is recommended to put patches into 
+.B autobuild/patches
+so everyone can manage these easily. Features like automatically patching everything in that path may
+be included soon.
 .SH beyond
 
 .SH AUTHOR
