@@ -5,7 +5,7 @@ export ARCH=amd64
 export MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
 
-export DPKGDEBFLAGS="-Zxz -z9" # To generate extremely small packages, try "-z9e", the xz extreme. Also try customizing filter options. 
+export DPKGDEBFLAGS="-Zxz -z9" # To generate extremely small packages, try "-z9e ", the xz extreme. Also try customizing filter options like delta and "--LZMA2=nice=273". Wait for the xz multi-thread support...
 
 # programs
 
