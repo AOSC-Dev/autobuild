@@ -4,7 +4,7 @@ export ABLE=$ABPF/lib/autobuild
 export ARCH=i386
 export MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
-export TARFILE=$(echo "$PKGNAME"_"$PKGVER".tar.xz) && export DEBFILE=$(echo "$PKGNAME".deb)
+
 export DPKGDEBFLAGS="-Zxz -z9"
 
 # programs
@@ -31,7 +31,7 @@ fi
 
 if [ -e autobuild/defines ]
 then
-	. autobuild/defines
+	. autobuild/defines && export TARFILE=$(echo "$PKGNAME"_"$PKGVER".tar.xz) && export DEBFILE=$(echo "$PKGNAME".deb)
 else
 	echo "No autobuild/defines :-("
 	exit 1
