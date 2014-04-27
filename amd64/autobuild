@@ -31,7 +31,7 @@ fi
 
 if [ -e autobuild/defines ]
 then
-	. autobuild/defines && export TARFILE=$(echo "$PKGNAME"_"$PKGVER".tar.xz) && export DEBFILE=$(echo "$PKGNAME".deb)
+	. autobuild/defines
 else
 	echo "No autobuild/defines :-("
 	exit 1
@@ -129,6 +129,6 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-dpkg-deb $DPKGDEBFLAGS -b abdist $DEBFILE && dpkg -i $DEBFILE && tar -cvJf $TARFILE ./autobuild
+dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i $DEBFILE && tar -cvJf ${PKGNAME}_${PKGVER}.txz ./autobuild
 
 fi
