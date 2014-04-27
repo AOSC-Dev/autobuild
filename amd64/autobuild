@@ -129,6 +129,6 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i $DEBFILE && tar -cvJf ${PKGNAME}_${PKGVER}.txz ./autobuild
+dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i ${PKGNAME}.deb && tar -cvJf ${PKGNAME}_${PKGVER}.tar.xz ./autobuild
 
 fi

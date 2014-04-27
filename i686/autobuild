@@ -1,11 +1,11 @@
 #! /bin/bash
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
-export ARCH=i386
+export ARCH=amd64
 export MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
 
-export DPKGDEBFLAGS="-Zxz -z9"
+export DPKGDEBFLAGS="-Zxz -z9" # To generate extremely small packages, try "-z9e ", the xz extreme. Also try customizing filter options like delta and "--LZMA2=nice=273". Wait for the xz multi-thread support...
 
 # programs
 
@@ -31,7 +31,7 @@ fi
 
 if [ -e autobuild/defines ]
 then
-	. autobuild/defines && export TARFILE=$(echo "$PKGNAME"_"$PKGVER".tar.xz) && export DEBFILE=$(echo "$PKGNAME".deb)
+	. autobuild/defines
 else
 	echo "No autobuild/defines :-("
 	exit 1
@@ -102,7 +102,7 @@ rm -f /usr/lib/perl5/*/*/perllocal.pod
 if [ ! -e autobuild/subpkgs ]
 then
 
-PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGREP=$PKGREP PKGRECOM=$PKGRECOM PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
+PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
 
 touch abdist/DEBIAN/postinst
 chmod 755 abdist/DEBIAN/postinst
@@ -129,6 +129,6 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-dpkg-deb $DPKGDEBFLAGS -b abdist $DEBFILE && dpkg -i $DEBFILE  && tar -cvJf $TARFILE ./autobuild
+dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i ${PKGNAME}.deb && tar -cvJf ${PKGNAME}_${PKGVER}.tar.xz ./autobuild
 
 fi
