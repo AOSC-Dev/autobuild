@@ -1,8 +1,8 @@
 #! /bin/bash
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
-export ARCH=amd64
-export MTER="`cat /etc/maintainer`"
+ARCH=amd64
+MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
 
 export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" # extreme for amd64!
@@ -102,7 +102,7 @@ rm -f /usr/lib/perl5/*/*/perllocal.pod
 if [ ! -e autobuild/subpkgs ]
 then
 
-PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
+MTER=$MTER ARCH=$ARCH PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
 
 touch abdist/DEBIAN/postinst
 chmod 755 abdist/DEBIAN/postinst
