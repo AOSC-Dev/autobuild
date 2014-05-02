@@ -22,16 +22,16 @@ We need your help to imagine and code!
 Pull requests are welcomed.
 
 Installation
-=========
-
+----
 First, the mainline of autobuild now only supports dpkg.
 
 You need have at least bash, dpkg installed.
 
 Then copy autobuild executable file to /usr/bin , and copy the libexec directory as /usr/lib/autobuild .
 
-Commands:
-	cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
+```
+cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
+```
 
 
 Developer:   
