@@ -27,7 +27,7 @@ First, the mainline of autobuild now only supports dpkg.
 
 You need have at least bash, dpkg installed.
 
-Then copy autobuild executable file to /usr/bin , and copy the libexec directory as /usr/lib/autobuild .
+Then copy autobuild executable file to `/usr/bin` , and copy the libexec directory as `/usr/lib/autobuild` .
 
 ```
 cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
@@ -35,7 +35,7 @@ cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/aut
 
 Source
 ----
-You can get the latest version of autobuild using `git`, `svn` or `GitHub Zip`.
+You can get the latest version of autobuild using `git`, `svn` or GitHub Zip.
 ```
 git clone https://github.com/AOSC-Dev/autobuild
 svn co https://github.com/AOSC-Dev/autobuild
