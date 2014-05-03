@@ -33,9 +33,9 @@ Then copy autobuild executable file to /usr/bin , and copy the libexec directory
 cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
 ```
 
-Git
+Source
 ----
-The latest version of autobuild can be checked out using `git`, `svn` or `GitHub Zip`.
+You can get the latest version of autobuild using `git`, `svn` or `GitHub Zip`.
 ```
 git clone https://github.com/AOSC-Dev/autobuild
 svn co https://github.com/AOSC-Dev/autobuild
