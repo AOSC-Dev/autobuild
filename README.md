@@ -33,6 +33,15 @@ Then copy autobuild executable file to /usr/bin , and copy the libexec directory
 cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
 ```
 
+Git
+----
+The latest version of autobuild can be checked out using `git`, `svn` or `GitHub Zip`.
+```
+git clone https://github.com/AOSC-Dev/autobuild
+svn co https://github.com/AOSC-Dev/autobuild
+wget https://github.com/AOSC-Dev/autobuild/archive/master.zip
+```
+Developers
+----
+EasternHeart <heartldev@gmail.com>	Main developer.
 
-Developer:   
-EasternHeart <<heartldev@gmail.com>>   Main developer.
