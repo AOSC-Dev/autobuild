@@ -30,7 +30,7 @@ You need have at least bash, dpkg installed.
 Then copy autobuild executable file to `/usr/bin` , and copy the libexec directory as `/usr/lib/autobuild` .
 
 ```Bash
-ARCH="`uname -m`" && [ "ARCH" == "x86_64" ] && ARCH="amd64" # dpkg-friendly conversion, only for amd64
+ARCH="`uname -m`" && [ "$ARCH" == "x86_64" ] && ARCH="amd64" # dpkg-friendly conversion, only for amd64
 [ "$ARCH" != "amd64" ] && ./genarch $ARCH # Generate autobuild for your arch...
 cd $ARCH && cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
 ```
