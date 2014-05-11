@@ -1,13 +1,21 @@
 #! /bin/bash
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
-ARCH=amd64 # For better cross-arch: try ARCH="`uname -m`" But be careful with amd64 and x86_64 ...
+# ARCH=amd64 # For better cross-arch: try ARCH="`uname -m`" But be careful with amd64 and x86_64 ...
+             # From what I can see it only returns in x86_64 so here I would try to have a translation going...
+             # 
+             # I just made up my mind to check in a file.
+             # Like so...
+ARCH="`cat /etc/arch`"
+# Please include /etc/arch in ANY OS3 Distros.
 MTER="`cat /etc/maintainer`"
-export ABTGTPM=dpkg
+export ABTGTPM="`cat /etc/pm`"
+# Please include /etc/pm in ANY OS3 Distros, for autobuild to determine Package Manager,
+# Or not, just output two copies of packages anyway...
 
-export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" # extreme for amd64!
-
-# programs
+export DPKGDEBFLAGS="-Zxz -z6" # extreme for amd64!
+                               # Reverted, it only makes installation of packages slower and may hang some older machine.
+                               # Note that we are making distro for everyone.
 
 if [ "x$PYTHON" = "x" ]
 then
@@ -24,7 +32,7 @@ fi
 
 if [ ! -d autobuild ]
 then
-	echo No autobuild directory ^o^
+	echo "autobuild directory doesn't exist man... relax... ^O^"
 	# what's the point for the emotion character...
 	exit 1
 fi
@@ -70,6 +78,10 @@ else
 	exit 1
 fi
 
+# QA call.
+
+. $ABLE/autobuild_qa-check
+
 if [ ! -d abdist ]
 then
 	echo No abdist ^o^
@@ -88,12 +100,12 @@ fi
 
 # Begin plugins
 
-# remove dir
+# Remove dir
 
 rm -f abdist/usr/share/info/dir
 rm -f abdist/usr/info/dir
 
-# remove perl info
+# remove Perl info
 
 rm -f /usr/lib/perl5/*/perllocal.pod
 rm -f /usr/lib/perl5/*/*/perllocal.pod
@@ -105,18 +117,19 @@ then
 
 MTER=$MTER ARCH=$ARCH PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
 
+# Hey Icenowy, are these all needed anyway?
 touch abdist/DEBIAN/postinst
 chmod 755 abdist/DEBIAN/postinst
 
 touch abdist/DEBIAN/prerm
 chmod 755 abdist/DEBIAN/prerm
 
-
 alternative(){
 	while [ "x$1" != "x" ]
 	do
 		echo "update-alternatives --install $1 `basename $1` $2 $3 " >> abdist/DEBIAN/postinst
 		echo "update-alternatives --remove `basename $1` $2" >> abdist/DEBIAN/prerm
+		# Funny code here...
 		shift
 		shift
 		shift

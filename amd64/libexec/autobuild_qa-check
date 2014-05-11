@@ -1,0 +1,29 @@
+#!/bin/bash
+# This is an experimental QA Check module for autobuild.
+# Feel free to add more to it.
+#
+# Just yet another Developer.
+
+# Check prefix now.
+if [ -d `pwd`/abdist/usr/local ]; then
+  echo -e "\033[31m/usr/local exists in your package tree!\033[0m"
+  echo "This breaks the QA policy of AOSC OS3, please check back on your AUTOTOOLS_AFTER, CMAKE_AFTER or autobuild/build scriptlet."
+  exit 1
+else
+  echo -e "\033[32mDirectory tree looks good so far, proceeding...\033[0m"
+fi
+
+# Fix DEBIAN scriptlet mode, whether you want it or not
+for scripts in `pwd`/abdist/DEBIAN/*
+do
+  echo -e "\033[32mMaking sure that all scripts in DEBIAN directory are chmod'ed to 755... Make no harm anyway.\033[0m"
+  chmod 755 $scripts
+done
+
+# Here above is all I can think of so far, feel free to add more.
+#
+# Well I have a TODO list here, not implemented yet:
+#
+# 1. Check for invalid symlinks
+# 2. Check for free files in / or /usr/
+# 3. ShLibDeps... Good ol' toolset.
