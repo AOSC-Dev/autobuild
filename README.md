@@ -30,6 +30,7 @@ You need have at least bash, dpkg installed.
 Then copy autobuild executable file to `/usr/bin` , and copy the libexec directory as `/usr/lib/autobuild` .
 
 ```
+./genarch `uname -m` && cd `uname -m` # Generate autobuild for your arch...
 cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
 ```
 
