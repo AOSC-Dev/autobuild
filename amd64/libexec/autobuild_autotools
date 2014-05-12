@@ -8,7 +8,7 @@ then
 else 
 	true
 fi && 
-$SRCDIR/configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && 
+$SRCDIR/${configure} --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && 
 make $ABMK $MAKE_AFTER && 
 make DESTDIR=$SRCDIR/abdist $MAKE_AFTER install && 
 if [ "x$ABSHADOW" = "x" ] 

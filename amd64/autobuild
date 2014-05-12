@@ -16,7 +16,8 @@ export ABTGTPM="`cat /etc/pm`"
 export DPKGDEBFLAGS="-Zxz -z6" # extreme for amd64!
                                # Reverted, it only makes installation of packages slower and may hang some older machine.
                                # Note that we are making distro for everyone.
-
+# TODO: xz benchmark
+export configure=configure
 if [ "x$PYTHON" = "x" ]
 then
 	export PYTHON=/usr/bin/python
@@ -115,7 +116,7 @@ rm -f /usr/lib/perl5/*/*/perllocal.pod
 if [ ! -e autobuild/subpkgs ]
 then
 
-MTER=$MTER ARCH=$ARCH PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
+MTER=$MTER ARCH=$ARCH configure=$configure PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
 
 # Hey Icenowy, are these all needed anyway?
 touch abdist/DEBIAN/postinst
