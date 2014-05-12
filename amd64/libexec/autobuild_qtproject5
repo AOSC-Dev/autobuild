@@ -1,0 +1,4 @@
+#!/bin/bash
+/usr/lib/qt5/bin/qmake
+make $ABMK
+make install INSTALL_ROOT=`pwd`/abdist/usr
