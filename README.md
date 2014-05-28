@@ -22,17 +22,28 @@ We need your help to imagine and code!
 Pull requests are welcomed.
 
 Installation
-=========
-
+----
 First, the mainline of autobuild now only supports dpkg.
 
 You need have at least bash, dpkg installed.
 
-Then copy autobuild executable file to /usr/bin , and copy the libexec directory as /usr/lib/autobuild .
+Then copy autobuild executable file to `/usr/bin` , and copy the libexec directory as `/usr/lib/autobuild` .
 
-Commands:
-	cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
+```Bash
+ARCH="`uname -m`" && [ "$ARCH" == "x86_64" ] && ARCH="amd64" # dpkg-friendly conversion, only for amd64
+[ "$ARCH" != "amd64" ] && ./genarch $ARCH # Generate autobuild for your arch...
+cd $ARCH && cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec /usr/lib/autobuild
+```
 
+Source
+----
+You can get the latest version of autobuild using `git`, `svn` or GitHub Zip.
+```
+git clone https://github.com/AOSC-Dev/autobuild
+svn co https://github.com/AOSC-Dev/autobuild
+wget https://github.com/AOSC-Dev/autobuild/archive/master.zip
+```
+Developers
+----
+EasternHeart <heartldev@gmail.com>	Main developer.
 
-Developer:   
-EasternHeart <<heartldev@gmail.com>>   Main developer.
