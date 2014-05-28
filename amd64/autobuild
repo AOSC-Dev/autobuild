@@ -1,22 +1,12 @@
 #! /bin/bash
 export ABPF=/usr
 export ABLE=$ABPF/lib/autobuild
-# ARCH=amd64 # For better cross-arch: try ARCH="`uname -m`" But be careful with amd64 and x86_64 ...
-             # From what I can see it only returns in x86_64 so here I would try to have a translation going...
-             # 
-             # I just made up my mind to check in a file.
-             # Like so...
-ARCH="`cat /etc/arch`"
+ARCH=amd64
+# ARCH="`cat /etc/arch`"
 # Please include /etc/arch in ANY OS3 Distros.
 MTER="`cat /etc/maintainer`"
-export ABTGTPM="`cat /etc/pm`"
-# Please include /etc/pm in ANY OS3 Distros, for autobuild to determine Package Manager,
-# Or not, just output two copies of packages anyway...
-
-export DPKGDEBFLAGS="-Zxz -z6" # extreme for amd64!
-                               # Reverted, it only makes installation of packages slower and may hang some older machine.
-                               # Note that we are making distro for everyone.
-# TODO: xz benchmark
+export ABTGTPM=dpkg
+export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" 
 export configure=configure
 if [ "x$PYTHON" = "x" ]
 then
