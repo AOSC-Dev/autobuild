@@ -31,7 +31,7 @@ fi
 if [ -e autobuild/defines ]
 then
 	. autobuild/defines
-	[ $PKGDES = "" ] && PKGDES="$PKGDESC" # Be PKGBUILD-user-friendly
+	[ "x$PKGDES" = "x" ] && PKGDES="$PKGDESC" # Be PKGBUILD-user-friendly
 else
 	echo "No autobuild/defines :-("
 	exit 1
