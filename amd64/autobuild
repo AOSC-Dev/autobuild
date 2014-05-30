@@ -134,6 +134,7 @@ fi
 
 chmod a-s abdist/DEBIAN
 
+PKGVER=$(echo "$PKGVER" | sed "s/:/_/g" -)
 dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i ${PKGNAME}.deb && tar -cvJf ${PKGNAME}_${PKGVER}.tar.xz ./autobuild
 
 fi
