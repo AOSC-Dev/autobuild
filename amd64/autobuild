@@ -63,6 +63,7 @@ fi
 
 if autobuild_$ABTYPE
 then
+	[ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE )
 	:
 else
 	echo "Build failed..."
