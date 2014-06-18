@@ -6,16 +6,73 @@
 
 # Check prefix now.
 if [ -d `pwd`/abdist/usr/local ]; then
-  echo -e "\033[31m/usr/local exists in your package tree!\033[0m"
+  echo -e "\e[31m/usr/local exists in your package tree!\e[0m"
   echo "This breaks the QA policy of AOSC OS3, please check back on your AUTOTOOLS_AFTER, CMAKE_AFTER or autobuild/build scriptlet."
   read -n 1 -p "Press any key to continue or C-c to quit..."
 else
-  echo -e "\033[32mDirectory tree looks good so far, proceeding...\033[0m"
+  echo -e "\e[32mDirectory tree looks good so far, proceeding...\e[0m"
 fi
 
 # Fix DEBIAN scriptlet mode, whether you want it or not
-chmod -R 0755 `pwd`/abdist/DEBIAN/*
-echo "Everything in abdist/DEBIAN chmod'ed to 0755."
+chmod -R 0755 `pwd`/abdist/DEBIAN/{post*,pre*}
+echo "post* and pre* in abdist/DEBIAN chmod'ed to 0755."
+
+# Check sections
+# 前方高能刷屏，无关人员请迅速撤离
+echo "admin
+cli-mono
+comm
+database
+debian-installer
+debug
+devel
+doc
+editors
+eletronics
+embedded
+fonts
+games
+gnome
+gnu-r
+gnustep
+graphics
+hamradio
+haskell
+httpd
+interpreters
+java
+kde
+kernel
+libdevel
+libs
+lisp
+localization
+mail
+math
+misc
+net
+news
+ocaml
+oldlibs
+otherosfs
+perl
+php
+python
+ruby
+science
+shells
+sound
+tex
+text
+utils
+vcs
+video
+virtual
+web
+x11
+xfce
+zope" | grep '^'"$PKGSEC"'$' 1>/dev/null 2>&! && echo -e "\e[31mSection looks great, proceeding...\e[0m" || echo -e "\e32m[Section not in the stardard sections list. See https://github.com/AOSC-Dev/autobuild3/blob/master/sets/section.\e[0m"
+
 # Here above is all I can think of so far, feel free to add more.
 #
 # Well I have a TODO list here, not implemented yet:
