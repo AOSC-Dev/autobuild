@@ -1,0 +1,21 @@
+cd $PKGDIR
+fileenum(){
+	for i in `find .` # Well, be a bit BSD-find-friendly...
+	do
+		[ ! -e $i ] && continue
+		eval `echo $1 | sed "s@{}@$i@g"`
+	done
+}
+elfstrip(){
+	( file $1 | grep '\: ELF' > /dev/null )	&& (( echo "$i" | grep "/bin/" 1>/dev/null 2>&1 || echo "$i" | grep "/sbin" 1>/dev/null 2>&1 ) && strip --strip-all $1 2> /dev/null || strip --strip-debug $1 2> /dev/null ) || return 0 
+}
+fltr_elffltr(){
+        for i in usr/lib lib bin usr/bin opt/*/lib opt/*/bin
+        do
+                [ -d $i ] || continue
+                pushd $i >/dev/null
+                fileenum "elfstrip {}"
+                popd >/dev/null
+        done
+}
+[ "$ABSTRIP" == "yes" ] && fltr_elffltr 

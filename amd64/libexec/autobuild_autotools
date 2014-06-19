@@ -1,6 +1,5 @@
 #! /bin/bash
 . autobuild/defines
-SRCDIR=`pwd`
 if [ "x$ABSHADOW" = "x" ] 
 then
 	mkdir -p build &&
@@ -10,7 +9,7 @@ else
 fi && 
 $SRCDIR/${configure} --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER && 
 make $ABMK $MAKE_AFTER && 
-make DESTDIR=$SRCDIR/abdist $MAKE_AFTER install && 
+make DESTDIR=$PKGDIR $MAKE_AFTER install && 
 if [ "x$ABSHADOW" = "x" ] 
 then 
 	cd ..

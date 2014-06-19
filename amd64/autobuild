@@ -8,6 +8,8 @@ MTER="`cat /etc/maintainer`"
 export ABTGTPM=dpkg
 export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" 
 export configure=configure
+export SRCDIR="$PWD"
+export PKGDIR="$PWD/abdist"
 if [ "x$PYTHON" = "x" ]
 then
 	export PYTHON=/usr/bin/python
@@ -63,7 +65,7 @@ fi
 
 if autobuild_$ABTYPE
 then
-	[ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE )
+	[ LICENSE == yes ] && ( [ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE ))
 	:
 else
 	echo "Build failed..."
@@ -71,8 +73,12 @@ else
 fi
 
 # QA call.
+touch abdist/DEBIAN/{postinst,prerm}
 
 . $ABLE/autobuild_qa-check
+
+# Backported elf strip.
+. $ABLE/autobuild_elf
 
 if [ ! -d abdist ]
 then
@@ -108,13 +114,6 @@ if [ ! -e autobuild/subpkgs ]
 then
 
 MTER=$MTER ARCH=$ARCH configure=$configure PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
-
-# Hey Icenowy, are these all needed anyway?
-touch abdist/DEBIAN/postinst
-chmod 755 abdist/DEBIAN/postinst
-
-touch abdist/DEBIAN/prerm
-chmod 755 abdist/DEBIAN/prerm
 
 alternative(){
 	while [ "x$1" != "x" ]
