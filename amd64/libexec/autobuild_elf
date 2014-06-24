@@ -21,3 +21,4 @@ fltr_elffltr(){
 	cd $SRCDIR
 }
 [ "$ABSTRIP" == "yes" ] && fltr_elffltr 
+cd $SRCDIR
