@@ -39,7 +39,7 @@ else
 	exit 1
 fi
 
-if [ $configure ]; then ABSHADOW=no; ABTYPE=autotools; fi
+if [ "$configure" != "configure" ]; then ABSHADOW=no; ABTYPE=autotools; fi
 
 # get necessary dependencies defined in define before build
 # BUILDDEP+PKGDEP=***REAL*** Needed stuff.
