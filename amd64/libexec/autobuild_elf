@@ -10,6 +10,7 @@ elfstrip(){
 	( file $1 | grep '\: ELF' > /dev/null )	&& (( echo "$i" | grep "/bin/" 1>/dev/null 2>&1 || echo "$i" | grep "/sbin" 1>/dev/null 2>&1 ) && strip --strip-all $1 2> /dev/null || strip --strip-debug $1 2> /dev/null ) || return 0 
 }
 fltr_elffltr(){
+	cd $SRCDIR/abdist
         for i in usr/lib lib bin usr/bin opt/*/lib opt/*/bin
         do
                 [ -d $i ] || continue
@@ -17,5 +18,6 @@ fltr_elffltr(){
                 fileenum "elfstrip {}"
                 popd >/dev/null
         done
+	cd $SRCDIR
 }
 [ "$ABSTRIP" == "yes" ] && fltr_elffltr 
