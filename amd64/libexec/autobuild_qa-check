@@ -71,7 +71,7 @@ virtual
 web
 x11
 xfce
-zope" | grep '^'"$PKGSEC"'$' 1>/dev/null 2>&1 && echo -e "\e[31mSection looks great, proceeding...\e[0m" || ( echo -e "\e[31mSection not in the stardard sections list. See https://github.com/AOSC-Dev/autobuild3/blob/master/sets/section.\e[0m"; read -n 1 -p "Press any key to continue or C-c to quit..." )
+zope" | grep '^'"$PKGSEC"'$' 1>/dev/null 2>&1 && echo -e "\e[32mSection looks great, proceeding...\e[0m" || ( echo -e "\e[31mSection not in the stardard sections list. See https://github.com/AOSC-Dev/autobuild3/blob/master/sets/section.\e[0m"; read -n 1 -p "Press any key to continue or C-c to quit..." )
 
 # Here above is all I can think of so far, feel free to add more.
 #
