@@ -4,7 +4,7 @@ export ABLE=$ABPF/lib/autobuild
 ARCH=amd64
 # ARCH="`cat /etc/arch`"
 # Please include /etc/arch in ANY OS3 Distros.
-MTER="`cat /etc/maintainer`"
+MTER="$(cat /etc/maintainer || echo \"Unknown UNKNOWN <unknown@unknown.unknown>\")"
 export ABTGTPM=dpkg
 export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" 
 export configure=configure
