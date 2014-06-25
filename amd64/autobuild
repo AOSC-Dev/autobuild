@@ -62,6 +62,7 @@ then
 	then
 		. autobuild/patch
 		touch .patch
+		cd $SRCDIR
 	fi
 fi
 
@@ -97,6 +98,8 @@ if [ -e autobuild/beyond ]
 then
 	. autobuild/beyond
 fi
+
+cd $SRCDIR
 
 # Begin plugins
 
