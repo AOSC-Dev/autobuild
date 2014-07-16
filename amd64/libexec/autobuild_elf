@@ -7,7 +7,19 @@ fileenum(){
 	done
 }
 elfstrip(){
-	( file $1 | grep '\: ELF' > /dev/null )	&& (( echo "$i" | grep "/bin/" 1>/dev/null 2>&1 || echo "$i" | grep "/sbin" 1>/dev/null 2>&1 ) && strip --strip-all $1 2> /dev/null || strip --strip-debug $1 2> /dev/null ) || return 0 
+	if ( file $1 | grep '\: ELF' > /dev/null )
+	then if (( echo "$i" | grep "/bin/" 1>/dev/null 2>&1 || echo "$i" | grep "/sbin" 1>/dev/null 2>&1 )
+	then strip --strip-all $1 2> /dev/null
+	else strip --strip-debug $1 2> /dev/null 
+	fi
+	else return 0
+	fi
+}
+elfstrip_dbg() {
+  if ( file $1 | grep '\: ELF' > /dev/null )
+  then strip --strip-debug $1
+  else return 0
+  fi
 }
 fltr_elffltr(){
 	cd $SRCDIR/abdist
@@ -15,10 +27,10 @@ fltr_elffltr(){
         do
                 [ -d $i ] || continue
                 pushd $i >/dev/null
-                fileenum "elfstrip {}"
+                fileenum "$2 {}"
                 popd >/dev/null
         done
 	cd $SRCDIR
 }
-[ "$ABSTRIP" == "yes" ] && fltr_elffltr 
+if [ "$ABSTRIP" == "yes" ]; then fltr_elffltr elfstrip; else fltr_elffltr elfstrip_dbg; fi
 cd $SRCDIR

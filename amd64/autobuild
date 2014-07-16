@@ -89,9 +89,13 @@ then
 	exit 1
 fi
 
+# Backport the overrides, which can be later overwritten easily.
+[ -d autobuild/overrides ] && cp -a autobuild/overrides/* abdist
+# abscript TODO.
+
 if [ -d autobuild/override ]
 then
-	cp -r --preserve=all autobuild/override/* abdist
+	cp -a autobuild/override/* abdist
 fi
 
 if [ -e autobuild/beyond ]
