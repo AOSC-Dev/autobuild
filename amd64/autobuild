@@ -4,7 +4,7 @@ export ABLE=$ABPF/lib/autobuild
 ARCH=amd64
 # ARCH="`cat /etc/arch`"
 # Please include /etc/arch in ANY OS3 Distros.
-MTER="$(cat /etc/maintainer || echo \"Unknown UNKNOWN <unknown@unknown.unknown>\")"
+MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.unknown>')"
 export ABTGTPM=dpkg
 export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" 
 export configure=configure
@@ -43,10 +43,8 @@ if [ "$configure" != "configure" ]; then ABSHADOW=no; ABTYPE=autotools; fi
 
 # get necessary dependencies defined in define before build
 # BUILDDEP+PKGDEP=***REAL*** Needed stuff.
-if dpkg -l $BUILDDEP $PKGDEP
+if ! dpkg -l $BUILDDEP $PKGDEP
 then
-        true
-else
         apt-get update 
         apt-get install $BUILDDEP $PKGDEP --yes
 fi
@@ -56,19 +54,16 @@ then
 	export ABTYPE="`detect_type`"
 fi
 
-if [ -e autobuild/patch ]
+if [ -e autobuild/patch ] && [ ! -e .patch ]
 then
-	if [ ! -e .patch ]
-	then
-		. autobuild/patch
-		touch .patch
-		cd $SRCDIR
-	fi
+  . autobuild/patch
+  cd $SRCDIR
+  touch .patch
 fi
 
 if autobuild_$ABTYPE
 then
-	[ LICENSE == yes ] && ( [ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE ))
+	[ $LICENSE == yes ] && ( [ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE ))
 	:
 else
 	echo "Build failed..."
@@ -130,9 +125,7 @@ alternative(){
 		echo "update-alternatives --install $1 `basename $1` $2 $3 " >> abdist/DEBIAN/postinst
 		echo "update-alternatives --remove `basename $1` $2" >> abdist/DEBIAN/prerm
 		# Funny code here...
-		shift
-		shift
-		shift
+		shift 3
 	done
 }
 
