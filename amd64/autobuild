@@ -10,6 +10,7 @@ export DPKGDEBFLAGS="-Zxz -z9 -Sextreme"
 export configure=configure
 export SRCDIR="$PWD"
 export PKGDIR="$PWD/abdist"
+die(){ echo "$1">&2; exit ${2-1}; }
 if [ "x$PYTHON" = "x" ]
 then
 	export PYTHON=/usr/bin/python
@@ -19,27 +20,25 @@ if [ -e $ABLE/functions ]
 then
 	. $ABLE/functions
 else
-	echo "Installation not full!"
-	exit 1
+	die "Installation not full!"
 fi
 
 if [ ! -d autobuild ]
 then
-	echo "autobuild directory doesn't exist man... relax... ^O^"
+	die "autobuild directory doesn't exist man... relax... ^O^"
 	# what's the point for the emotion character...
-	exit 1
 fi
 
 if [ -e autobuild/defines ]
 then
 	. autobuild/defines
-	[ "x$PKGDES" = "x" ] && PKGDES="$PKGDESC" # Be PKGBUILD-user-friendly
+	[ "$PKGDES" ] || PKGDES="$PKGDESC" # Be PKGBUILD-user-friendly
 else
-	echo "No autobuild/defines :-("
-	exit 1
+	die "No autobuild/defines :-("
 fi
 
 if [ "$configure" != "configure" ]; then ABSHADOW=no; ABTYPE=autotools; fi
+[[ "$PKGNAME" =~ +32$ ]] && BUILDDEP+=' 32subsystem'
 
 # get necessary dependencies defined in define before build
 # BUILDDEP+PKGDEP=***REAL*** Needed stuff.
@@ -61,13 +60,12 @@ then
   touch .patch
 fi
 
-if autobuild_$ABTYPE
+autobuild_$ABTYPE || die "Build failed..."
+
+if [ $LICENSE == yes ] && [ -e LICENSE ] || mv COPYING LICENSE
 then
-	[ $LICENSE == yes ] && ( [ -e COPYING ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE || ( [ -e LICENSE ] && mkdir -p abdist/usr/share/licenses/${PKGNAME} && cp LICENSE abdist/usr/share/licenses/${PKGNAME}/LICENSE ))
-	:
-else
-	echo "Build failed..."
-	exit 1
+	mkdir -p abdist/usr/share/licenses/${PKGNAME}
+	cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE
 fi
 
 # QA call.
@@ -78,11 +76,7 @@ touch abdist/DEBIAN/{postinst,prerm}
 # Backported elf strip.
 . $ABLE/autobuild_elf
 
-if [ ! -d abdist ]
-then
-	echo No abdist ^o^
-	exit 1
-fi
+[  -d abdist ] || die 'No abdist ^o^'
 
 # Backport the overrides, which can be later overwritten easily.
 [ -d autobuild/overrides ] && cp -a autobuild/overrides/* abdist
