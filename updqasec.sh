@@ -9,7 +9,7 @@ p_help(){
   exit 1
 }
 [ $1 ] || p_help
-[ -e amd64/libexec/autobuild_qa-check ] || { echo amd64/libexec/autobuild_qa-check not found.; exit; }
+[ -e amd64/libexec/qa ] || { echo amd64/libexec/qa not found.; exit; }
 exec 4<"$1"
 while read s -u 4; do forsec+=" s" done
 forsec=$(fold -s -w 74 <<< "$forsec" | while read s; do echo "  $s "'\'; done)

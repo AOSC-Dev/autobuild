@@ -1,2 +1,0 @@
-#! /bin/bash
-perl Makefile.PL && make && make DESTDIR=`pwd`/abdist install

@@ -1,0 +1,76 @@
+#!/bin/bash
+# autobuild functions, shebang for syntax.
+
+# misc functions
+commaprint(){ 
+	local FIRST=true
+	for i; do
+		! $FIRST && echo -n ' , ' || FIRST=false
+		echo -n $i;
+	done
+}
+varcheck(){
+	declare -n vchk
+	for vchk; do [ -z "$vchk" ] && break; done && return 0
+	# if it didn't return, it must have failed
+	declare +n vchk # Say its name
+	return 1
+}
+
+# build functions
+build_self(){
+	. $SRCDIR/autobuild/build
+}
+
+build_autotools(){
+	[ -z "$ABSHADOW" ] && mkdir -p build && cd build
+	$SRCDIR/${configure} --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER &&
+	make $ABMK $MAKE_AFTER &&
+	make DESTDIR=$PKGDIR $MAKE_AFTER install &&
+}
+build_cmake(){
+	[ -z "$ABSHADOW" ] && mkdir -p build && cd build
+	cmake "$SRCDIR" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release $CMAKE_AFTER &&
+	make $ABMK $MAKE_AFTER &&
+	make DESTDIR=$PKGDIR $MAKE_AFTER install
+}
+build_perl(){
+	perl Makefile.PL && make && make DESTDIR=$PKGDIR install
+}
+build_python(){
+	$PYTHON setup.py bdist &&
+	cd dist &&
+	tar xvf *.tar.* &&
+	rm *.tar.* &&
+	cd .. &&
+	mv dist "$PKGDIR"
+}
+build_qtproject(){
+	# qt5 packages: please use PATH="/usr/lib/qt5/bin:$PATH" in defines
+	qmake && make $ABMK
+}
+
+# probers
+detect_type(){
+	if [ -e autobuild/build ]
+	then
+		echo "self"
+	elif [ -e configure ]
+	then
+		echo "autotools"
+	elif [ -e CMakeLists.txt ]
+	then
+		echo "cmake"
+	elif [ -e setup.py ]
+	then
+		echo "python"
+	elif [ -e Makefile.PL ]
+	then
+		echo "perl"
+	elif [ "*.pro" != '*.pro' ]
+	then
+		echo "qtproject"
+	else
+		echo "unsupported"
+	fi
+}

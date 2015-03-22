@@ -1,0 +1,53 @@
+#! /bin/bash
+dpkg_getver(){
+        COLUMNS=1 dpkg -l $1 | grep ^ii | cut -c 20- | cut -d " " -f 1
+}
+
+cprint(){ echo -ne "$1: "; shift; commaprint "$@"; }
+
+gendep(){
+	echo -ne 'Depends: '
+	local FIRST=true
+	for i in $PKGDEP
+	do
+		! $FIRST && echo -n ' , ' || FIRST=false
+		echo -n "$i"
+		[ "$(echo $i | cut -d '|' -f 1)" == "$i" ] &&
+			echo -n "(>= `dpkg_getver $i`)"
+	done
+}
+
+alternative(){
+	while [ ! -z "$1" ]
+	do
+		echo "update-alternatives --install $1 `basename $1` $2 $3 " >> abdist/DEBIAN/postinst
+		echo "update-alternatives --remove `basename $1` $2" >> abdist/DEBIAN/prerm
+		# Funny code here...
+		shift 3
+	done
+}
+
+mkctrl(){
+	echo "Package: $PKGNAME"
+	echo "Version: $PKGVER"
+	echo "Architecture: $ARCH"
+	[ "$PKGSEC" ] && echo "Section: $PKGSEC"
+	echo "Maintainer: $MTER"
+	echo "Installed-Size: $(du -s $PKGDIR | cut -f 1)"
+	echo "Description: $PKGDES"
+	gendep
+	# optional fields
+	[ "$PKGRECOM" ] && cprint Recommends $PKGRECOM
+	[ "$PKGREP" ] && cprint Replaces $PKGREP
+	[ "$PKGCONFL" ] && cprint Conflicts $PKGCONFL
+	[ "$PKGPROV" ] && cprint Provides $PKGPROV
+	[ "$PKGBREAK" ] && cprint Breaks $PKGBREAK
+}
+
+pack(){
+	mkdir -p $PKGDIR/DEBIAN
+	touch $PKGDIR/DEBIAN/{postinst,prerm}
+	mkctrl > $PKGDIR/DEBIAN/control &&
+	dpkg-deb -Zxz -z9 -Sextreme -b abdist ${PKGNAME}.deb &&
+	dpkg -i ${PKGNAME}.deb
+}

@@ -1,38 +1,24 @@
 #! /bin/bash
-export ABPF=/usr
-export ABLE=$ABPF/lib/autobuild
+export ABPF=/usr ABLE=$ABPF/lib/autobuild
+export SRCDIR="$PWD" PKGDIR="$PWD/abdist"
+export PYTHON=${PYTHON=/usr/bin/python}
 ARCH=amd64
-# ARCH="`cat /etc/arch`"
-# Please include /etc/arch in ANY OS3 Distros.
-MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.unknown>')"
-export ABTGTPM=dpkg
-export DPKGDEBFLAGS="-Zxz -z9 -Sextreme" 
-export configure=configure
-export SRCDIR="$PWD"
-export PKGDIR="$PWD/abdist"
-die(){ echo "$1">&2; exit ${2-1}; }
-if [ "x$PYTHON" = "x" ]
-then
-	export PYTHON=/usr/bin/python
-fi
+MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.moe>')"
+ABPM=dpkg
+die(){ echo -ne '\e[31m'; echo "$1">&2; echo -ne '\e[0m'; exit ${2-1}; }
 
-if [ -e $ABLE/functions ]
-then
-	. $ABLE/functions
-else
-	die "Installation not full!"
-fi
+# integrity check
+. $ABLE/base || die "autobuild base function import failed"
+. $ABLE/$ABPM || die "$ABPM packing function import failed"
 
-if [ ! -d autobuild ]
-then
-	die "autobuild directory doesn't exist man... relax... ^O^"
-	# what's the point for the emotion character...
-fi
+[ -d autobuild ] || die "autobuild directory doesn't exist man... relax... ^O^"
+# what's the point for the emotion character...
 
 if [ -e autobuild/defines ]
 then
 	. autobuild/defines
 	[ "$PKGDES" ] || PKGDES="$PKGDESC" # Be PKGBUILD-user-friendly
+	varcheck PKG{NAME,VER,DES} || die "Package info $vchk missing."
 else
 	die "No autobuild/defines :-("
 fi
@@ -48,11 +34,6 @@ then
         apt-get install $BUILDDEP $PKGDEP --yes
 fi
 
-if [ "x$ABTYPE" = "x" ]
-then
-	export ABTYPE="`detect_type`"
-fi
-
 if [ -e autobuild/patch ] && [ ! -e .patch ]
 then
   . autobuild/patch
@@ -60,7 +41,7 @@ then
   touch .patch
 fi
 
-autobuild_$ABTYPE || die "Build failed..."
+build_${ABTYPE=$(detect_type)} || die "Build failed..."
 
 if [ $LICENSE == yes ] && [ -e LICENSE ] || mv COPYING LICENSE
 then
@@ -69,17 +50,15 @@ then
 fi
 
 # QA call.
-touch abdist/DEBIAN/{postinst,prerm}
-
-. $ABLE/autobuild_qa-check
+. $ABLE/qa
 
 # Backported elf strip.
-. $ABLE/autobuild_elf
+. $ABLE/elf
 
 [  -d abdist ] || die 'No abdist ^o^'
 
 # Backport the overrides, which can be later overwritten easily.
-[ -d autobuild/overrides ] && cp -a autobuild/overrides/* abdist
+[ -d autobuild/overrides ] && cp -la autobuild/overrides/* abdist
 # abscript TODO.
 
 if [ -d autobuild/override ]
@@ -108,20 +87,7 @@ rm -f /usr/lib/perl5/*/*/perllocal.pod
 
 # End plugins
 
-if [ ! -e autobuild/subpkgs ]
-then
-
-MTER=$MTER ARCH=$ARCH configure=$configure PKGNAME=$PKGNAME PKGVER=$PKGVER PKGDEP=$PKGDEP PKGSEC=$PKGSEC PKGDES=$PKGDES PKGCONFL=$PKGCONFL PKGRECOM=$PKGRECOM PKGREP=$PKGREP PKGPROV=$PKGPROV PKGBREAK=$PKGBREAK gen_control
-
-alternative(){
-	while [ "x$1" != "x" ]
-	do
-		echo "update-alternatives --install $1 `basename $1` $2 $3 " >> abdist/DEBIAN/postinst
-		echo "update-alternatives --remove `basename $1` $2" >> abdist/DEBIAN/prerm
-		# Funny code here...
-		shift 3
-	done
-}
+[ -e autobuild/subpkgs ] && exit
 
 if [ -e autobuild/alternatives ]
 then
@@ -130,7 +96,4 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-PKGVER=$(echo "$PKGVER" | sed "s/:/_/g" -)
-dpkg-deb $DPKGDEBFLAGS -b abdist ${PKGNAME}.deb && dpkg -i ${PKGNAME}.deb && tar -cvJf ${PKGNAME}_${PKGVER}.tar.xz ./autobuild
-
-fi
+pack && tar -cvJf ${PKGNAME}_${PKGVER//:/_}.tar.xz ./autobuild

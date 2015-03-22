@@ -1,4 +1,0 @@
-#!/bin/bash
-qmake
-make $ABMK
-make install INSTALL_ROOT=`pwd`/abdist/usr
