@@ -21,12 +21,11 @@ varcheck(){
 build_self(){
 	. $SRCDIR/autobuild/build
 }
-
 build_autotools(){
 	[ -z "$ABSHADOW" ] && mkdir -p build && cd build
 	$SRCDIR/${configure} --prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/$PKGNAME $AUTOTOOLS_AFTER &&
 	make $ABMK $MAKE_AFTER &&
-	make DESTDIR=$PKGDIR $MAKE_AFTER install &&
+	make DESTDIR=$PKGDIR $MAKE_AFTER install
 }
 build_cmake(){
 	[ -z "$ABSHADOW" ] && mkdir -p build && cd build

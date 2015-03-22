@@ -1,0 +1,13 @@
+PKGNAME=autobuild
+PKGVER=$(date -u +%Y+%m+%d)
+PKGSEC=devel
+PKGDEP='binutils bash dpkg python-2 scons cmake gcc make perl ruby'
+PKGRECOM='clang 32subsystem'
+PKGDES="a auto-building tool for :Next development."
+ABARCHIVE=false
+
+if [ $GIT ] && [ -e .git/HEAD ]; then
+	PKGNAME+='-git'
+	PKGVER+=-$(git rev-parse --short HEAD)
+else unset GIT
+fi

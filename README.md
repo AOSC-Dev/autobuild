@@ -1,5 +1,8 @@
 autobuild
 =========
+**The mainline support for autobuild has ended. Use [autobuild3](https://github.com/AOSC-Dev/autobuild3) instead.**
+Now most of the new commits are bugfixes, and sometimes you can see some rare backports from ab3. 
+
 A tool for building a .deb (maybe more when forked) from source, it supports autotools (./configure stuff) and
 cmake internally. After putting autobuild/define file in the source tree, use the autobuild command to see how
 the source code is built into binaries, then a .deb package. It's cool. 
@@ -23,9 +26,15 @@ Pull requests are welcomed.
 
 Installation
 ----
-First, the mainline of autobuild now only supports dpkg.
+Simply run `autobuild` if you have a copy of autobuild installed. Try `amd64/autobuild` if you don't have
+one and you are using amd64.
 
-You need have at least bash, dpkg installed.
+First, the mainline of autobuild now only supports dpkg. There are ab2 branches for rpm support already, but the
+one that works best in the autobulid family is [autobuild3](https://github.com/AOSC-Dev/autobuild3), which is
+actually a rewritten one. 
+
+You need have at least bash, dpkg installed. The ELF stripping plugin in `$ARCH/libexec/elf` requires 
+binutils, but you can delete it if you want to.
 
 Then copy autobuild executable file to `/usr/bin` , and copy the libexec directory as `/usr/lib/autobuild` .
 
@@ -38,12 +47,14 @@ cd $ARCH && cp autobuild /usr/bin && rm -rf /usr/lib/autobuild && cp -r libexec 
 Source
 ----
 You can get the latest version of autobuild using `git`, `svn` or GitHub Zip.
-```
+```Bash
 git clone https://github.com/AOSC-Dev/autobuild
 svn co https://github.com/AOSC-Dev/autobuild
 wget https://github.com/AOSC-Dev/autobuild/archive/master.zip
 ```
+
 Developers
 ----
 EasternHeart <heartldev@gmail.com>	Main developer.
 
+Read [Contributors](https://github.com/AOSC-Dev/autobuild/graphs/contributors) for a full list.
