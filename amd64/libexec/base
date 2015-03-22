@@ -2,6 +2,7 @@
 # autobuild functions, shebang for syntax.
 
 # misc functions
+returns(){ return $1; }
 commaprint(){ 
 	local FIRST=true
 	for i; do
@@ -10,11 +11,12 @@ commaprint(){
 	done
 }
 varcheck(){
-	declare -n vchk
-	for vchk; do [ -z "$vchk" ] && break; done && return 0
+	declare -gn vchk
+	local ret=0
+	for vchk; do [ -z "$vchk" ] && ret=1 && break; done
 	# if it didn't return, it must have failed
-	declare +n vchk # Say its name
-	return 1
+	declare -g +n vchk # Say its name
+	return $ret
 }
 
 # build functions
