@@ -3,18 +3,17 @@
 
 # misc functions
 returns(){ return $1; }
-commaprint(){ 
+commaprint(){
 	local FIRST=true
 	for i; do
 		! $FIRST && echo -n ' , ' || FIRST=false
 		echo -n $i;
 	done
 }
-varcheck(){
+varcheck(){	# is it empty?
 	declare -gn vchk
 	local ret=0
 	for vchk; do [ -z "$vchk" ] && ret=1 && break; done
-	# if it didn't return, it must have failed
 	declare -g +n vchk # Say its name
 	return $ret
 }
