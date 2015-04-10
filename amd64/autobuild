@@ -41,7 +41,7 @@ if [ "$configure" != "configure" ]; then ABSHADOW=no; ABTYPE=autotools; fi
 if ! dpkg -l $BUILDDEP $PKGDEP
 then
         apt-get update 
-        apt-get install $BUILDDEP $PKGDEP --yes
+        apt-get install $BUILDDEP $PKGDEP --yes || die 'Failed getting packages.'
 fi
 
 if [ -e autobuild/patch ] && [ ! -e .patch ]
