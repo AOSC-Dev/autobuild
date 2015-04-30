@@ -1,5 +1,5 @@
-autobuild package manager support
-=================================
+PM support
+==========
 
 autobuild supports various package managers, which can be selected using the `$ABPM` variable.
 

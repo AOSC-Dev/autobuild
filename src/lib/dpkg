@@ -5,8 +5,11 @@ getver(){
 
 cprint(){ echo -ne "$1: "; shift; commaprint "$@"; echo; }
 
-# TODO: genver(name[OPversion | _]) -> buf+="name [dpkg ver str]" + (first?'':'|')
-# TODO: i.split('|').foreach(genver) // dpkg-specific
+# TODO: base::genver(name[OPversion|_]) -> buf+="name [dpkg ver str]" + (first?'':'|')
+#    // genver may read $OP_{EQ,LE,GE} for each package manager in case there are differences.
+# TODO: base::listdp(PKGDEP) { var buf,cnt=0; PKGDEP.foreach(i -> { 
+#    i.split('|').foreach(genver); // if split members > 1, warn DPKG ONLY
+#    buf += (cnt++)?', ':'' } ); return buf; }
 gendep(){
 	echo -ne 'Depends: '
 	local FIRST=true
@@ -42,6 +45,7 @@ pack(){
 	mkctrl > $PKGDIR/DEBIAN/control &&
 	dpkg-deb -Zxz -z9 -Sextreme -b $PKGDIR ${PKGNAME}.deb &&
 	dpkg -i ${PKGNAME}.deb
+	mv $PKGDIR/DEBIAN $SRCDIR/ab-dpkg
 }
 
 getdep(){
