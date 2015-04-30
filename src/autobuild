@@ -6,7 +6,7 @@ ABLE=$ABPF/lib/autobuild
 ARCH=amd64
 MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.moe>')"
 ABPM=dpkg
-die(){ echo -ne '\e[31m'; echo "$1">&2; echo -ne '\e[0m'; exit ${2-1}; }
+die(){ echo -ne '\n\e[31m'; echo "$1">&2; echo -ne '\e[0m'; exit ${2-1}; }
 
 # Where are we?
 if [ ! -d $ABLE ]
