@@ -1,0 +1,19 @@
+#!/bin/bash
+# user/group utils from ab3
+user(){
+	echo "grep -q '^$1:' /etc/passwd || useradd -c '$5' -g $3 -d $4 -u $2 -s $6 $1 -m" >> abscripts/preinst
+	N=$1
+	shift 6
+	for i; do echo "usermod -a -G '$i' '$N'" >> abscripts/preinst; done
+}
+
+group(){
+	echo "grep -q '^$1:' /etc/passwd || groupadd -g $2 $1" >> abscripts/preinst
+}
+if [ -e autobuild/usergroup ]
+then
+	. autobuild/usergroup
+fi
+
+unset user group
+
