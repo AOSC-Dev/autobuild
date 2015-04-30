@@ -13,10 +13,6 @@ else
   echo -e "\e[32mDirectory tree looks good so far, proceeding...\e[0m"
 fi
 
-# Fix DEBIAN scriptlet mode, whether you want it or not
-chmod -R 0755 `pwd`/abdist/DEBIAN/{post*,pre*} &>/dev/null
-echo "post* and pre* in abdist/DEBIAN chmod'ed to 0755."
-
 # Check sections
 # 前方高能刷屏，无关人员请迅速撤离
 qa_sec(){

@@ -17,6 +17,9 @@ varcheck(){	# is it empty?
 	declare -g +n vchk # Say its name
 	return $ret
 }
+dumparg(){ for i; do printf '%q ' "$i"; done; }
+_ab_rsor(){ for i; do [[ -e "$i" ]] && . "$i"; done; }
+_ab_plug(){ for i; do _ab_rsor $ABLE/plugin/{,$ARCH_}$i_*.sh; done; }
 
 # build functions
 build_self(){
@@ -50,7 +53,7 @@ build_qtproject(){
 	qmake && make $ABMK
 }
 
-# probers
+# build related
 detect_type(){
 	if [ -e autobuild/build ]
 	then
@@ -74,3 +77,14 @@ detect_type(){
 		echo "unsupported"
 	fi
 }
+
+# a more precise one
+# addalt link name path prio
+addalt(){
+	echo "update-alternatives --install $(dumparg "$@")" >> abdist/postinst
+	echo "update-alternatives --remove $(dumparg "$2" "$3")" >> abdist/prerm
+}
+
+# alternative path link prio [path2 link2 prio2 ..]
+alternative(){ while [ ! -z "$1" ]; do addalt "$1" "$(basename "$1")" "$2" "$3"; shift 3; done; }
+

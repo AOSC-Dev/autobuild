@@ -2,5 +2,5 @@
 ./genarch.sh $ARCH
 mkdir -p $SRCDIR/$PREFIX/{bin,lib}
 install -m755 $ARCH/autobuild $SRCDIR/$PF/bin/
-cp -rv $ARCH/libexec/ abdist/usr/lib/autobuild/
+cp -av $ARCH/lib/ abdist/usr/lib/autobuild/
 [ $GIT ] && sed -i -e "s@/usr@$PF@1" $ARCH/autobuild

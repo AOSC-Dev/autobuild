@@ -13,13 +13,15 @@ if [ ! -d $ABLE ]
 then
 	echo "Autobuild installation not found. Using self…"
 	export ABPF=$(dirname $0)
-	ABLE=$ABPF/libexec
+	ABLE=$ABPF/lib
 fi
 export ABLE
 
 # integrity check
 . $ABLE/base || die "autobuild base function import failed"
+_ab_plug base
 . $ABLE/$ABPM || die "$ABPM packing function import failed"
+_ab_plug pkgm $ABPM
 
 [ -d autobuild ] || die "autobuild directory doesn't exist man... relax... ^O^"
 # what's the point for the emotion character...
@@ -32,17 +34,15 @@ then
 else
 	die "No autobuild/defines :-("
 fi
+_ab_plug define
 
 if [ "$configure" != "configure" ]; then ABSHADOW=no; ABTYPE=autotools; fi
 [[ "$PKGNAME" =~ +32$ ]] && BUILDDEP+=' 32subsystem'
 
 # get necessary dependencies defined in define before build
 # BUILDDEP+PKGDEP=***REAL*** Needed stuff.
-if ! dpkg -l $BUILDDEP $PKGDEP
-then
-        apt-get update 
-        apt-get install $BUILDDEP $PKGDEP --yes
-fi
+getdep $BUILDDEP $PKGDEP || die 'Unable to resolve deps.'
+_ab_plug deps
 
 if [ -e autobuild/patch ] && [ ! -e .patch ]
 then
@@ -50,6 +50,7 @@ then
   cd $SRCDIR
   touch .patch
 fi
+_ab_plug patch
 
 build_${ABTYPE=$(detect_type)} || die "Build failed..."
 
@@ -58,44 +59,35 @@ then
 	mkdir -p abdist/usr/share/licenses/${PKGNAME}
 	cp COPYING abdist/usr/share/licenses/${PKGNAME}/LICENSE
 fi
+_ab_plug build
+[ -d abdist ] || die 'No abdist generated from build.'
 
-# QA call.
-. $ABLE/qa
+# Backport the overrides
+[ -d autobuild/overrides ] && cp -la autobuild/override{,s}
 
-# Backported elf strip.
-. $ABLE/elf
-
-[  -d abdist ] || die 'No abdist ^o^'
-
-# Backport the overrides, which can be later overwritten easily.
-[ -d autobuild/overrides ] && cp -la autobuild/overrides/* abdist
-# abscript TODO.
+# abscript basics.
+mkdir abscripts
+for i in {post,pre}{inst,rm}; do
+	mv autobuild/override/DEBIAN/$i autobuild/$i || echo "#! /bin/bash" > abscripts/$i
+	cat autobuild/$i >> abscripts/$i 2>/dev/null || echo "Creating empty $i."
+	chmod 755 abscripts/$i
+done
 
 if [ -d autobuild/override ]
 then
 	cp -a autobuild/override/* abdist
+	_ab_plug run_override
 fi
+_ab_plug override
 
 if [ -e autobuild/beyond ]
 then
 	. autobuild/beyond
+	_ab_plug run_beyond
 fi
 
 cd $SRCDIR
-
-# Begin plugins
-
-# Remove dir
-
-rm -f abdist/usr/share/info/dir
-rm -f abdist/usr/info/dir
-
-# remove Perl info
-
-rm -f /usr/lib/perl5/*/perllocal.pod
-rm -f /usr/lib/perl5/*/*/perllocal.pod
-
-# End plugins
+_ab_plug beyond
 
 [ -e autobuild/subpkgs ] && exit
 
@@ -106,4 +98,6 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-pack && ${NOARCHIVE-true} && tar -cvJf ${PKGNAME}_${PKGVER//:/_}.tar.xz ./autobuild
+pack && ${ARCHIVE-true} && tar -cvJf ${PKGNAME}_${PKGVER//:/_}.tar.xz ./autobuild
+
+_ab_plug pack

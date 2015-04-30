@@ -9,8 +9,8 @@ p_help(){
   exit 1
 }
 [ $1 ] || p_help
-[ -e amd64/libexec/qa ] || { echo amd64/libexec/qa not found.; exit; }
-exec 4<"$1"
+[ -e src/lib/qa ] || { echo src/lib/qa not found.; exit; }
+exec 4<"${1=&1}"
 while read s -u 4; do forsec+=" s" done
 forsec=$(fold -s -w 74 <<< "$forsec" | while read s; do echo "  $s "'\'; done)
 while read l; do
@@ -21,7 +21,7 @@ while read l; do
     while read s; do [ "$s" == '#ENDSEC' ] && break; done # Skip..
   else echo "$s"
   fi
-done < amd64/libexec/autobuild_qa-check > amd64/libexec/.autobuild_qa-check
-mv amd64/libexec/{,_}autobuild_qa-check
-mv amd64/libexec/{.,}autobuild_qa-check
+done < src/lib/autobuild_qa-check > src/lib/.autobuild_qa-check
+mv src/lib/{,_}autobuild_qa-check
+mv src/lib/{.,}autobuild_qa-check
 exec 4<&-
