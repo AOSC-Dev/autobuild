@@ -4,9 +4,10 @@
 # misc functions
 returns(){ return $1; }
 commaprint(){
+	: ${PM_COMMA=, }
 	local FIRST=true
 	for i; do
-		! $FIRST && echo -n ' , ' || FIRST=false
+		! $FIRST && echo -n "$PM_COMMA" || FIRST=false
 		echo -n $i;
 	done
 }
@@ -20,6 +21,10 @@ varcheck(){	# is it empty?
 dumparg(){ for i; do printf '%q ' "$i"; done; }
 _ab_rsor(){ for i; do [[ -e "$i" ]] && . "$i"; done; }
 _ab_plug(){ for i; do _ab_rsor $ABLE/plugin/{,$ARCH_}$i_*.sh; done; }
+bool(){ case "$1" in [yY]|[tT]|1|[tT][rR][uU][eE]) return 0; esac; return 1; }
+
+# msg funcs like in ab3
+warn(){ echo -e "(WW)\t$*" >&2; }
 
 # build functions
 build_self(){
@@ -53,7 +58,7 @@ build_qtproject(){
 	qmake && make $ABMK
 }
 
-# build related
+# BUILD SUPL
 detect_type(){
 	if [ -e autobuild/build ]
 	then
@@ -88,3 +93,51 @@ addalt(){
 # alternative path link prio [path2 link2 prio2 ..]
 alternative(){ while [ ! -z "$1" ]; do addalt "$1" "$(basename "$1")" "$2" "$3"; shift 3; done; }
 
+# COMMON PMGR
+# ref: PAKMGR.md
+_ab_pm='' # package manager spec variables
+# genver <pkgspec> -> pkgname[<ver_s><op>verstr<ver_e>]
+_ab_pm+="OP_{EQ,LE,GE} VER_{S,E} "
+genver(){
+	local VER_NONE store IFS ver name
+	: ${OP_EQ== } ${OP_LE=<= } ${OP_GE=>= } ${VER_S= (} ${VER_E=)} ${VER_NONE=0}
+	if [[ "$1" =~ _$ ]]; then		# name_ -> name
+		echo -n "${1%_}"; return;
+	elif [[ "$1" =~ [\<\>=]= ]]; then		# nameOP[ver] -> name OP_ ver
+		IFS="$BASH_REMATCH"	# split string using OP
+		store=($1)
+		name=${store[0]} ver=${store[2]}
+		IFS=${IFS/==/$OP_EQ}	# translate to package manager notation
+		IFS=${IFS/<=/$OP_LE}
+		IFS=${IFS/>=/$OP_GE}
+	elif bool $VER_NONE; then		# name -> name (e.g. conflicts, ..)
+		echo -n "$1"; return;
+	else name=$1 IFS="$OP_GE"		# name -> name OP_GE getver
+	fi
+	echo -n "$name$VER_S$IFS${ver=$(getver "$1")}$VER_E"
+}
+# depcom: Turns "$@" into a comma seperated list of deps.
+_ab_pm+="PM_{ALT,DELIM,COMMA} "
+depcom(){
+	: ${PM_ALT=1} ${PM_DELIM= | }
+	local IFS=\| dep pkg i cnt=0	# cnt_depcom: dep comma pos
+	for i; do
+		dep=($i)
+		mkcomma
+		_deparse
+	done
+}
+_deparse(){
+	local cnt=0			# cnt__deparse: dep delim pos
+	if ! bool PM_ALT && ((${#pkgs}>1)); then
+		warn "$ABPM doesn't support dependency alternative listing.\n\t" \
+			"Using first dependency: $dep -> ${dep[0]}."
+		genver ${dep[0]}; return;
+	fi
+	for pkg in ${dep[@]}; do
+		PM_COMMA="$PM_DELIM" mkcomma
+		genver $pkg
+	done
+}
+# mkcomma: makes a comma or something else ($PM_COMMA in current context).
+mkcomma(){ ((cnt++)) && echo -n "${PM_COMMA=, }"; }
