@@ -4,12 +4,13 @@ getver(){
 }
 
 # dpkg field helper.
-_ab_pm_func+='field '
+_ab_pm_func+='field pkgver'
 field(){ echo -ne "$1: "; shift; depcom "$@"; echo; }
+pkgver(){ ((PKGEPOCH)) && echo -n $PKGEPOCH:; echo -n "$PKGVER"; ((PKGREL)) && echo "-$PKGREL"; }
 
 mkctrl(){
 	echo "Package: $PKGNAME"
-	echo "Version: $PKGVER"
+	echo "Version: $(pkgver)"
 	echo "Architecture: $ARCH"
 	[ "$PKGSEC" ] && echo "Section: $PKGSEC"
 	echo "Maintainer: $MTER"
@@ -25,7 +26,8 @@ mkctrl(){
 }
 
 pack(){
-	cp -rl $SRCDIR/abscripts $PKGDIR/DEBIAN
+	cp -rl $SRCDIR/abscripts/* $PKGDIR/DEBIAN
+	cp -l $SRCDIR/autobuild/conffile $PKGDIR/DEBIAN 2>/dev/null
 	mkctrl > $PKGDIR/DEBIAN/control &&
 	dpkg-deb -Zxz -z9 -Sextreme -b $PKGDIR ${PKGNAME}.deb &&
 	dpkg -i ${PKGNAME}.deb

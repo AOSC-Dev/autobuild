@@ -7,6 +7,7 @@ ARCH=amd64
 MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.moe>')"
 ABPM=dpkg
 die(){ echo -ne '\n\e[31m'; echo "$1">&2; echo -ne '\e[0m'; exit ${2-1}; }
+shopt -s expand_aliases extglob
 
 # Where are we?
 if [ ! -d $ABLE ]
@@ -64,6 +65,8 @@ _ab_plug build
 
 # Backport the overrides
 [ -d autobuild/overrides ] && cp -la autobuild/override{,s}
+
+[ -e autobuild/conffiles ] || mv autobuild/{override/DEBIAN/,}conffiles
 
 # abscript basics.
 mkdir abscripts

@@ -1,6 +1,7 @@
 #!/bin/bash
-
-# In RPM We are quite likely to change some variables.
+PM_ALT=0 VER_S=' ' VER_E=''
+_ab_pm_func+='rpm{opttag,reqprov,files,scripts} '
+# In RPM We are quite likely to change some important variables.
 pack()(
 	[ -e autobuild/pre-rpm ] && . autobuild/pre-rpm
 	genspec > abspec
@@ -8,5 +9,101 @@ pack()(
 	rpm -Uvh --force /root/rpmbuild/RPMS/x86_64/$PKGNAME-$PKGVER-$PKGREL*.rpm 
 )
 
-genspec(){
+# Optional Tag: tagname pkgs
+rpmopttag(){
+	[[ $# -le 1 ]] && return
+	echo -e "$1\t\t"; shift
+	VER_NONE=1 depcom "$@"
+}
 
+# Fscked-up varname.
+rpmreqprov(){
+	if bool $ABRPMAUTOPROVONLY; then
+  		echo "Autoprov:       yes"
+  		echo "Autoreq:        no"
+	else
+  		echo "Autoreqprov:    yes"
+	fi
+}
+
+# There should NOT be any errors.
+rpmscripts(){
+	for i in {pre,post}{inst,rm}; do
+		i=${i/rm/un}
+		echo "%${i%inst} -p /bin/bash"
+		cat abscripts/$i
+		echo
+	done
+}
+
+# Files, list, boom!
+# We are not going to meet any DEBIAN stuffs. The PAKMGR spec says that
+# every support wipes its own butt.
+rpmfiles(){
+	find $PKGDIR | while read i; do
+    		[ -d "$i" ] && [ ! -L "$i" ] && continue 
+    		# echo "$i" >&2
+    		grep "^$i\$" "$SRCDIR/autobuild/conffiles" && echo "%config"
+   		echo "%defattr($(stat --printf %a,%U,%G "$i"),-)"
+		# If there is a space, double quote!
+		[[ $i =~ ' ' ]] && echo -n \"
+    		echo -n /
+    		printf %s "$(echo $i | cut -c 8-)"
+		[[ $i =~ ' ' ]] && echo -n \"
+    		echo
+  	done
+}
+	
+genspec(){
+	local inv='-p /bin/bash'
+# Note: We need a wrapper to do the same transformation on the versions of
+# 	the dependencies.
+#	Since the whole pack process is in a subshell, we don't worry about
+#	overriding the getver() func.
+	eval "getver(){ $(declare -f getver | tail -n+1 | head -n+1) | sed -e s/-/_/g; }"
+# Note: The Version replacement stragegy is different from ab3
+# TODO: License, URL as package defs (also needed for pkgbuild)
+# 	We need to think if we are going to keep the PKG prefixes.
+# TODO: Assign Summary/Description & description/Long-Description.
+# TODO: Verify cp's behavior with `-l --reflink'. Expecting reflink first tried.
+# Note: It's a good idea to explicitly define Epoch in RPM.
+	cat << _ab_rpm_endspec
+# Generated automatically by autobuild on $(LANG=C date)
+# This is made to ask rpm to pack from built binary.
+Name:		$PKGNAME
+Version:	${PKGVER//-/_}
+Release:	$PKGREL
+Epoch:		$PKGEPOCH
+Summary:	$PKGDES
+
+Group:		$(sed -f $ABLE/supp/rpm-sec <<< "$PKGSEC")
+License:	Unknown
+URL:		Unknown
+$(rpmreqprov)
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires:	$(depcom $PKGDEP)
+$(rpmopttag Conflicts $PKGCONFL)
+$(rpmopttag Replaces $PKGREP)
+$(rpmopttag Provides $PKGPROV)
+
+%description
+$PKGDES
+
+%prep
+true
+
+%build
+true
+
+%install
+rm -rf $RPM_BUILD_ROOT
+cp -ra --reflink -l $PKGDIR $RPM_BUILD_ROOT
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+$(rpmscripts)
+
+$(rpmfiles)
+_ab_rpm_endspec
+}
