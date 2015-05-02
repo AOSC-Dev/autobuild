@@ -1,6 +1,7 @@
 autobuild
 =========
 **The mainline support for autobuild has ended. Use [autobuild3](https://github.com/AOSC-Dev/autobuild3) instead.**
+**However Autobuild4 (AOSC OS5) may be built upon this repo, keep posted.**
 Now most of the new commits are bugfixes, and sometimes you can see some rare backports from ab3. 
 
 A tool for building a .deb (maybe more when forked) from source, it supports autotools (./configure stuff) and
