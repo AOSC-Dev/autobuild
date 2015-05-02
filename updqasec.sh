@@ -21,7 +21,7 @@ while read l; do
     while read s; do [ "$s" == '#ENDSEC' ] && break; done # Skip..
   else echo "$s"
   fi
-done < src/lib/autobuild_qa-check > src/lib/.autobuild_qa-check
-mv src/lib/{,_}autobuild_qa-check
-mv src/lib/{.,}autobuild_qa-check
+done < src/lib/plug/define_0_sections > src/lib/.plug/define_0_sections
+mv src/lib/{,_}plug/define_0_sections
+mv src/lib/{.,}plug/define_0_sections
 exec 4<&-

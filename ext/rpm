@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# In RPM We are quite likely to change some variables.
+pack()(
+	[ -e autobuild/pre-rpm ] && . autobuild/pre-rpm
+	genspec > abspec
+	rpmbuild -bb abspec
+	rpm -Uvh --force /root/rpmbuild/RPMS/x86_64/$PKGNAME-$PKGVER-$PKGREL*.rpm 
+)
+
+genspec(){
+

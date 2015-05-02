@@ -12,9 +12,9 @@ A package manager profile should contain the following functions to work properl
   * `getdep [PACKAGES...]`: Make sure that the PACKAGES are installed so we aren't missing any of the dependencies.
   * `getver PKGNAME`: returns the version of PKGNAME. Used in `genver` (base).
 
-post/pre-inst/rm scripts can be found in `$SRCDIR/abscripts`. The `pack` function should not change the contents of `$PKGDIR`.
+post/pre-inst/rm scripts can be found in `$SRCDIR/abscripts`. The `pack` function should not change the contents of `$PKGDIR`. 
 
-The functions can be either subshell functions or regular functions. Write a subshell func if you need to change some variables like `$PKGNAME` and `$PKGVER` (this happens with RPM.)
+The functions can be either subshell functions or regular functions. Write a subshell func if you need to change some variables like `$PKGNAME` and `$PKGVER` (this happens with RPM.) Names of custom functions should be added to `$_ab_pm_func`.
 
 PM support in lib/base
 ----------------------
@@ -30,6 +30,6 @@ VER_S, VER_E	| string| ` (`, `)`		| What to start/end the version strings with.
 PM_COMMA	| string| `, `			| The comma used in dependencies to seperate items.
 PM_DELIM	| string| ` | `			| The deliminator used to seperate alternatives.
 PM_ALT		| bool	| 1			| Whether the PM supports alternative dependencies.
-VER_NONE	| bool	| 0 (Always Local)	| Whether `genver` should autofill the version of a simple depspec. Set to 1 in `Conflicts` Listings: `VER_NONE=1 depcom ...`.
+VER_NONE	| bool	| 0			| Whether `genver` should autofill the version of a simple depspec. Set to 1 in `Conflicts` Listings: `VER_NONE=1 depcom ...`.
 
 All the global ones are listed in the variable `$_ab_pm`. You can use `eval unset $_ab_pm` to reset them.

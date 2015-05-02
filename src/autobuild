@@ -68,7 +68,7 @@ _ab_plug build
 # abscript basics.
 mkdir abscripts
 for i in {post,pre}{inst,rm}; do
-	mv autobuild/override/DEBIAN/$i autobuild/$i || echo "#! /bin/bash" > abscripts/$i
+	[ -e autobuild/$i ] || mv autobuild/{override/DEBIAN/,}$i || echo "#! /bin/bash" > abscripts/$i
 	cat autobuild/$i >> abscripts/$i 2>/dev/null || echo "Creating empty $i."
 	chmod 755 abscripts/$i
 done
