@@ -76,6 +76,7 @@ detect_type(){
 	then
 		echo "perl"
 	elif [ "*.pro" != '*.pro' ]
+	elif [ "$(echo *.pro)" != '*.pro' ]
 	then
 		echo "qtproject"
 	else
