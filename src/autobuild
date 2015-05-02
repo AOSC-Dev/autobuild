@@ -2,6 +2,7 @@
 export ABPF=/usr
 export SRCDIR="$PWD" PKGDIR="$PWD/abdist"
 export PYTHON=${PYTHON=/usr/bin/python}
+export LANG=C
 ABLE=$ABPF/lib/autobuild
 ARCH=amd64
 MTER="$(cat /etc/maintainer || echo 'Unknown UNKNOWN <unknown@unknown.moe>')"
