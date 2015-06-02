@@ -1,0 +1,34 @@
+#!/bin/bash
+# Command parser invoked after lib loading
+# syntax: autobuild command1 [args] [then command2 [args] [then ... ]] [ continue ] [ args left for other modules ]
+# TODO: magic command 'catch', default action for commands
+_command='clean init --help '
+_command_fun=''
+_command_var=''
+# new_command name VARS [-- tmpfuns]
+# creates a new command and mark the var as to_unset.
+new_command(){
+	_command+="command_$1 "
+	shift
+	local cmdinfo
+	_IFS="$IFS" IFS='--' cmdinfo=($*) IFS="$_IFS"
+	_command_var+="${cmdinfo[0]} "
+	_command_fun+="${cmdinfo[1]} "
+}
+command_clean(){ rm -rf "$SRCDIR"/ab{dist,scripts,spec}; }
+abplug command
+while true; do
+	case "$1" in
+		then)
+			command_"${cmdbuf[@]}" || die "command return value exit."
+			cmdbuf=();;
+		continue)
+			:;;
+		stop)
+		  die "command parser rquested";;
+		*)
+			cmdbuf+=("$1");;
+	esac
+	shift || break
+done
+command_"${cmdbuf[@]}"

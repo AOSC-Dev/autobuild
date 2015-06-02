@@ -1,5 +1,6 @@
 #!/bin/bash
 # autobuild functions, shebang for syntax.
+shopt -s extglob expand_aliases
 
 # misc functions
 returns(){ return $1; }

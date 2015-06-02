@@ -25,8 +25,7 @@ _ab_plug base
 . $ABLE/$ABPM || die "$ABPM packing function import failed"
 _ab_plug pkgm $ABPM
 
-[ -d autobuild ] || die "autobuild directory doesn't exist man... relax... ^O^"
-# what's the point for the emotion character...
+[ -d autobuild ] || die "autobuild directory doesn't exist. =w="
 
 if [ -e autobuild/defines ]
 then
