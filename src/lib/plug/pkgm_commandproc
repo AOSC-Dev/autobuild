@@ -1,8 +1,9 @@
 #!/bin/bash
 # Command parser invoked after lib loading
 # syntax: autobuild command1 [args] [then command2 [args] [then ... ]] [ continue ] [ args left for other modules ]
-# TODO: magic command 'catch', default action for commands
-_command='clean init --help '
+# This roughly provides a looks-like-promise programmable commanding.
+# TODO: magic command 'catch', default actions for commands.
+_command='clean init --help stop '
 _command_fun=''
 _command_var=''
 # new_command name VARS [-- tmpfuns]
@@ -16,19 +17,28 @@ new_command(){
 	_command_fun+="${cmdinfo[1]} "
 }
 command_clean(){ rm -rf "$SRCDIR"/ab{dist,scripts,spec}; }
+command_stop(){
+	[ "$1" ] || set -- 'command_stop'
+	die "$@"
+}
 abplug command
 while true; do
 	case "$1" in
-		then)
+		then)	# marks the start of next command
+			# if ((!catch))
 			command_"${cmdbuf[@]}" || die "command return value exit."
+			# || catch=1
 			cmdbuf=();;
-		continue)
-			:;;
-		stop)
-		  die "command parser rquested";;
+		catch)	# tells what to do if any previous command on the chain failed
+			# if ((catch)) run defaultval die || catch=1;
+			cmdbuf=();;
+		continue)	# stops the processing
+			shift
+			break;;
 		*)
 			cmdbuf+=("$1");;
 	esac
 	shift || break
 done
 command_"${cmdbuf[@]}"
+unset $_command $_command_fun $_command_var
