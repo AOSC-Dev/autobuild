@@ -6,15 +6,34 @@
 _command='clean init --help stop '
 _command_fun=''
 _command_var=''
+# interpreter related: mode & return val
+_command_ret=0
+_command_mod=then
+# interpreter debugging: word pos and command count
+_command_pos=0
+_command_cnt=0
 # new_command name VARS [-- tmpfuns]
 # creates a new command and mark the var as to_unset.
-new_command(){
+_command_new(){
 	_command+="command_$1 "
 	shift
 	local cmdinfo
 	_IFS="$IFS" IFS='--' cmdinfo=($*) IFS="$_IFS"
 	_command_var+="${cmdinfo[0]} "
 	_command_fun+="${cmdinfo[1]} "
+}
+_command_run(){
+	# run buffered command
+	((++_command_cnt))
+	if ((_command_ret)) && [ "$_command_mod" == catch ]; then
+		((${#command_buf[@]})) ||
+			command_buf=(stop "cmd $_command_cnt (\$$_command_pos) rets $_command_ret"）
+		command_"${_command_buf[@]}" || _command_ret=$?
+	elif [ "$_command_mod" == then ]; then
+		command_"${_command_buf[@]}" || _command_ret=$?
+	fi
+	_command_buf=()
+	_command_mod="$1"
 }
 command_clean(){ rm -rf "$SRCDIR"/ab{dist,scripts,spec}; }
 command_stop(){
@@ -23,22 +42,16 @@ command_stop(){
 }
 abplug command
 while true; do
+	((++_command_pos))
 	case "$1" in
-		then)	# marks the start of next command
-			# if ((!catch))
-			command_"${cmdbuf[@]}" || die "command return value exit."
-			# || catch=1
-			cmdbuf=();;
-		catch)	# tells what to do if any previous command on the chain failed
-			# if ((catch)) run defaultval die || catch=1;
-			cmdbuf=();;
+		then|catch)
+			_command_run "$1";;
 		continue)	# stops the processing
 			shift
 			break;;
 		*)
-			cmdbuf+=("$1");;
+			_command_buf+=("$1");;
 	esac
 	shift || break
 done
-command_"${cmdbuf[@]}"
-unset $_command $_command_fun $_command_var
+_command_run 'null'
