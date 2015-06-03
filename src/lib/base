@@ -128,7 +128,7 @@ depcom(){
 }
 _deparse(){
 	local cnt=0			# cnt__deparse: dep delim pos
-	if ! (( PM_ALT && ${#dep[@]}>1 )); then
+	if (( !PM_ALT && ${#dep[@]}>1 )); then
 		warn "$ABPM doesn't support dependency alternative listing.\n\t" \
 			"Using first dependency: $dep."
 		genver ${dep[0]}; return;
