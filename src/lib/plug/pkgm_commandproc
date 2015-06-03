@@ -1,6 +1,6 @@
 #!/bin/bash
 # Command parser invoked after lib loading
-# syntax: autobuild command1 [args] [then command2 [args] [then ... ]] [ continue ] [ args left for other modules ]
+# syntax: autobuild command1 [args] [delim args]* [continue] [unprocessed_args], where delim is either THEN or CATCH.
 # This roughly provides a looks-like-promise programmable commanding.
 # TODO: magic command 'catch', default actions for commands.
 _command='clean init --help stop '
@@ -9,13 +9,13 @@ _command_var=''
 # interpreter related: mode & return val
 _command_ret=0
 _command_mod=then
-# interpreter debugging: word pos and command count
 _command_pos=0
 _command_cnt=0
+_command_buf=()
 # new_command name VARS [-- tmpfuns]
 # creates a new command and mark the var as to_unset.
 _command_new(){
-	_command+="command_$1 "
+	_command+="$1 "
 	shift
 	local cmdinfo
 	_IFS="$IFS" IFS='--' cmdinfo=($*) IFS="$_IFS"
@@ -25,12 +25,12 @@ _command_new(){
 _command_run(){
 	# run buffered command
 	((++_command_cnt))
-	if ((_command_ret)) && [ "$_command_mod" == catch ]; then
+	if ((_command_ret)) && [ "$_command_mod" == CATCH ]; then
 		((${#command_buf[@]})) ||
 			command_buf=(stop "cmd $_command_cnt (\$$_command_pos) rets $_command_ret"）
 		command_"${_command_buf[@]}"
 		_command_ret=$?
-	elif [ "$_command_mod" == then ]; then
+	elif [ "$_command_mod" == THEN ]; then
 		command_"${_command_buf[@]}"
 		_command_ret=$?
 	fi
@@ -46,7 +46,7 @@ abplug command
 while true; do
 	((++_command_pos))
 	case "$1" in
-		then|catch)
+		THEN|CATCH)
 			_command_run "$1";;
 		continue)	# stops the processing
 			shift
@@ -56,5 +56,6 @@ while true; do
 	esac
 	shift || break
 done
-_command_run 'null'
-# TODO unset
+_command_run END
+for _command_tmp in $_command; do unset command_$_command_tmp; done
+for _command_tmp in $_command_fun $_command_var _command{,var,fun,pos,cnt,buf,ret,mod,tmp}; do unset $_command_tmp; done
