@@ -27,7 +27,7 @@ _command_run(){
 	((++_command_cnt))
 	if ((_command_ret)) && [ "$_command_mod" == CATCH ]; then
 		((${#command_buf[@]})) ||
-			command_buf=(stop "cmd $_command_cnt (\$$_command_pos) rets $_command_ret"）
+			command_buf=(stop "cmd $_command_cnt (\$$_command_pos) rets $_command_ret")
 		command_"${_command_buf[@]}"
 		_command_ret=$?
 	elif [ "$_command_mod" == THEN ]; then
@@ -58,4 +58,4 @@ while true; do
 done
 _command_run END
 for _command_tmp in $_command; do unset command_$_command_tmp; done
-for _command_tmp in $_command_fun $_command_var _command{,var,fun,pos,cnt,buf,ret,mod,tmp}; do unset $_command_tmp; done
+for _command_tmp in $_command_fun $_command_var _command{,_{var,fun,pos,cnt,buf,ret,mod,tmp}}; do unset $_command_tmp; done
