@@ -1,6 +1,6 @@
 #!/bin/bash
 # Command parser invoked after lib loading
-# syntax: autobuild command1 [args] [delim args]* [continue] [unprocessed_args], where delim is either THEN or CATCH.
+# syntax: autobuild command1 [args] [(CATCH|THEN) args]* [END] [unprocessed_args]
 # This roughly provides a looks-like-promise programmable commanding.
 # TODO: magic command 'catch', default actions for commands.
 _command='clean init --help stop '
@@ -42,13 +42,17 @@ command_stop(){
 	[ "$1" ] || set -- 'command_stop'
 	die "$@"
 }
+command_init(){
+	[ "$1" == '--help' ]; then
+	
+}
 abplug command
 while true; do
 	((++_command_pos))
 	case "$1" in
 		THEN|CATCH)
 			_command_run "$1";;
-		continue)	# stops the processing
+		END)	# stops the processing
 			shift
 			break;;
 		*)
