@@ -53,8 +53,8 @@ _command_help(){
 				IFS='=' tmparr=($OPTARG) IFS="_$IFS" tmpidx="${tmparr[0]}"
 				unset tmparr[0]
 				case $OPT in
-					o) opts[$tmpidx]="{tmparr[*]}";;
-					v) vars[$tmpidx]="{tmparr[*]}";;
+					o) opts[$tmpidx]="${tmparr[@]}";;
+					v) vars[$tmpidx]="${tmparr[@]}";;
 				esac;;
 			l)	longs+=("$OPTARG");;
 			t)	tails+=("$OPTARG");;
