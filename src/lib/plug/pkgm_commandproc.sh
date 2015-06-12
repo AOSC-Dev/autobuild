@@ -3,7 +3,7 @@
 # syntax: autobuild command1 [args] [(CATCH|THEN) args]* [END] [unprocessed_args]
 # This roughly provides a looks-like-promise programmable commanding.
 # TODO: magic command 'catch', default actions for commands.
-_command='clean init --help stop '
+_command='clean init --help stop setdie '
 _command_fun=''
 _command_var=''
 # interpreter related: mode & return val
@@ -11,6 +11,7 @@ _command_ret=0
 _command_mod=then
 _command_pos=0
 _command_cnt=0
+_command_die=0
 _command_buf=()
 _command_run(){
 	# run buffered command
@@ -32,12 +33,13 @@ _command_run(){
 _command_new(){
 	_command+="$1 "
 	shift
-	local cmdinfo
-	array_split cmdinfo '--' "$@"
-	_command_var+="${cmdinfo[0]} "
-	_command_fun+="${cmdinfo[1]} "
+	local cmdinfo _IFS="$IFS" IFS=$'\n'
+	local idx=($(array_divide cmdinfo '--' "$@"))
+	IFS="$_IFS"
+	_command_var+="${cmdinfo[@]:0:$idx} "
+	_command_fun+="${cmdinfo[@]:$idx} "
 }
-# _command_help [OPTIONS] "USAGE-LINE" DESCRIPTION
+# _command_help [OPTIONS] "USAGE-LINE" DESCRIPTION [setdie-val]
 # OPTIONS:
 # -o OPT=USAGE: Defines usage of option -ARG.
 # -v VAR=VALUE: Defines what var in the USAGE-LINE is.
@@ -64,6 +66,7 @@ _command_help(){
 	[ "$2" ] || exit 2
 	tmparr=($1) tmpidx="${tmparr[0]}" # getname
 	echo "$tmpidx: ${2=A weird command.}"
+	[ "$3" ] && echo "Sets \$command_die to $3."
 	if ((${#p[@]}>1)); then # usage line available!
 		echo -e "\e[1mUSAGE:\e[0m"
 		echo -e "\t$1\n"
@@ -83,6 +86,21 @@ _command_help(){
 	for tmpidx in "${tails[@]}"; do
 		echo -e "$tmpidx\n" | fold -s
 	done
+}
+# _command_list [OPTIONS] [COMMANDS]: lists seleted commands.
+# OPTIONS:
+# -i [INDENT-STR]
+_command_list(){
+	local OPTIND OPTARG indent=$'\t' cmds cmd
+	while getopts 'i:'; do
+		case $opt in
+			i)	indent="$OPTARG";;
+		esac
+	done
+	shift $((OPTIND-1))
+	cmds=("$@")
+	((${#cmds[@]})) || cmds=($_command)
+	for cmd in "${cmds[@]}"; do echo -n "$indent"; "command_$cmd" --help | head -n 1; done
 }
 command_clean(){ rm -rf "$SRCDIR"/ab{dist,scripts,spec}; }
 command_stop(){
@@ -105,8 +123,24 @@ command_init(){
 		shift || break
 	done
 }
+command_--help(){
+	_command_die=1
+	if [ "$1" ]; then
+		command_"$1" --help
+		return _ret
+	fi
+	_command_help -v command="A Command to run." -l "Currently defined commands:\n$(_command_list -i $'\t\t')" \
+	'autobuild <command> [args] [(CATCH|THEN) <command> args ...] [END] [unprocessed_args]' \
+	'automatic source-building tool.'
+}
+command_setdie(){
+	if [ "$1" == '--help' ]; then
+		_command_help 'setdie [die=!$_command_die]<boolean>' 'Sets or flips if ab should go on after all commands are processed.'
+	fi
+	_command_die=${1:-$((!_command_die))}
+}
 abplug command
-while true; do
+while (($#)); do
 	((++_command_pos))
 	case "$1" in
 		THEN|CATCH)
@@ -119,6 +153,7 @@ while true; do
 	esac
 	shift || break
 done
-_command_run END
+((${#command_buf[@]})) && _command_run THEN
+((_command_die)) && die _command_die STOP $_command_ret
 for _command_tmp in $_command; do unset command_$_command_tmp; done
 for _command_tmp in $_command_fun $_command_var _command{,_{var,fun,pos,cnt,buf,ret,mod,tmp}}; do unset $_command_tmp; done
