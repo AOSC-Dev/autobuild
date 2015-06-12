@@ -1,7 +1,7 @@
 #!/bin/bash
 # autobuild functions, shebang for syntax.
-shopt -s extglob expand_aliases
-
+shopt -s extglob expand_aliases nullglob
+readonly true=1 false=0
 # misc functions
 returns(){ return $1; }
 commaprint(){
@@ -23,6 +23,19 @@ dumparg(){ for i; do printf '%q ' "$i"; done; }
 _ab_rsor(){ for i; do [[ -e "$i" ]] && . "$i"; done; }
 _ab_plug(){ for i; do _ab_rsor $ABLE/plugin/{,$ARCH_}$i_*.sh; done; }
 bool(){ case "$1" in [yY]|[tT]|1|[tT][rR][uU][eE]) return 0; esac; return 1; }
+# array_divide <out>arr_name DELIM args[] -> stdout: divide pos, arr_name=args
+array_divide(){
+	[ "$1" ] || return 2
+	declare -n arr="$1"
+	local delim="${2---}" idx i
+	shift 2
+	for i; do
+		arr+=("$i")
+		[ "$i" = "$delim" ] && echo $idx
+		((++idx))
+	done
+}
+
 
 # msg funcs like in ab3
 warn(){ echo -e "(WW)\t$*" >&2; }
@@ -140,3 +153,10 @@ _deparse(){
 }
 # mkcomma: makes a comma or something else ($PM_COMMA in current context).
 mkcomma(){ ((cnt++)) && echo -n "${PM_COMMA=, }"; }
+
+# layout
+archivedir(){
+	local i
+	for i in {lib,}{a..z} {0..9} _unknown; do [[ "$1" = $i* ]] && break; done
+	echo "$i"
+}
