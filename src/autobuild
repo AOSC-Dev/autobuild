@@ -101,6 +101,13 @@ fi
 
 chmod a-s abdist/DEBIAN
 
-pack && ${ARCHIVE-true} && tar -cvJf ${PKGNAME}_${PKGVER//:/_}.tar.xz ./autobuild
-
+pack || die pack failed.
 _ab_plug pack
+
+if ((ARCHIVE)); then
+	tar -cvJf ${PKGNAME}_${PKGVER//:/_}.tar.xz ./autobuild
+	_ab_plug run_archive
+fi
+_ab_plug archive
+
+
