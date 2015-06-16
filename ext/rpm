@@ -1,17 +1,23 @@
 #!/bin/bash
 PM_ALT=0 VER_S=' ' VER_E=''
 _ab_pm_func+='rpm{opttag,reqprov,files,scripts} '
+# rpm translation
+declare -A ARCH_RPM
+ARCH_RPM[amd64]=x86_64
+ARCH_RPM[armel]=armfhp
 # In RPM We are quite likely to change some important variables.
+rpmarch(){ echo "${ARCH_RPM[$1]-$1}"; }
+
 pack()(
 	[ -e autobuild/pre-rpm ] && . autobuild/pre-rpm
 	genspec > abspec
 	rpmbuild -bb abspec
-	rpm -Uvh --force /root/rpmbuild/RPMS/x86_64/$PKGNAME-$PKGVER-$PKGREL*.rpm 
+	rpm -Uvh --force /root/rpmbuild/RPMS/x86_64/$PKGNAME-${PKGVER//-/_}-$PKGREL*.rpm 
 )
 
 # Optional Tag: tagname pkgs
 rpmopttag(){
-	[[ $# -le 1 ]] && return
+	[ "$2" ] || return
 	echo -e "$1\t\t"; shift
 	VER_NONE=1 depcom "$@"
 }
@@ -19,10 +25,10 @@ rpmopttag(){
 # Fscked-up varname.
 rpmreqprov(){
 	if bool $ABRPMAUTOPROVONLY; then
-  		echo "Autoprov:       yes"
-  		echo "Autoreq:        no"
+  		echo "Autoprov:		yes"
+  		echo "Autoreq:		no"
 	else
-  		echo "Autoreqprov:    yes"
+  		echo "Autoreqprov:		yes"
 	fi
 }
 
@@ -41,16 +47,16 @@ rpmscripts(){
 # every support wipes its own butt.
 rpmfiles(){
 	find $PKGDIR | while read i; do
-    		[ -d "$i" ] && [ ! -L "$i" ] && continue 
-    		# echo "$i" >&2
-    		grep "^$i\$" "$SRCDIR/autobuild/conffiles" && echo "%config"
+    	[[ -d "$i" && ! -L "$i" ]] && continue 
+    	# echo "$i" >&2
+    	grep "^$i\$" "$SRCDIR/autobuild/conffiles" && echo "%config"
    		echo "%defattr($(stat --printf %a,%U,%G "$i"),-)"
 		# If there is a space, double quote!
 		[[ $i =~ ' ' ]] && echo -n \"
-    		echo -n /
-    		printf %s "$(echo $i | cut -c 8-)"
+    	echo -n /
+    	printf %s "$(echo $i | cut -c 8-)"
 		[[ $i =~ ' ' ]] && echo -n \"
-    		echo
+    	echo
   	done
 }
 	
@@ -60,7 +66,7 @@ genspec(){
 # 	the dependencies.
 #	Since the whole pack process is in a subshell, we don't worry about
 #	overriding the getver() func.
-	eval "getver(){ $(declare -f getver | tail -n+1 | head -n+1) | sed -e s/-/_/g; }"
+
 # Note: The Version replacement stragegy is different from ab3
 # TODO: License, URL as package defs (also needed for pkgbuild)
 # 	We need to think if we are going to keep the PKG prefixes.

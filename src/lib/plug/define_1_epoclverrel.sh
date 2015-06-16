@@ -22,5 +22,5 @@ index=${#split[@]}
 
 case $index in
 	1) PKGREL=0;;
-	*) PKGREL=${split[$index]}; unset split[index]; PKGVER="${split[@]}"
+	*) PKGREL=${split[$index]}; unset split[index]; PKGVER="${split[@]//-/_}"
 esac
