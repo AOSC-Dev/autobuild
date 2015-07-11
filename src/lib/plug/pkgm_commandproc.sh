@@ -50,14 +50,15 @@ _command_help(){
 	declare -A opts vars
 	declare -a longs tails
 	while getopts "o:v:l:t:" OPT; do
-		case $OPT in
+		case "$OPT" in
 			o|v)
-				IFS='=' tmparr=($OPTARG) IFS="_$IFS" tmpidx="${tmparr[0]}"
+				IFS='=' tmparr=($OPTARG) tmpidx="${tmparr[0]}"
 				unset tmparr[0]
-				case $OPT in
-					o) opts[$tmpidx]="${tmparr[@]}";;
-					v) vars[$tmpidx]="${tmparr[@]}";;
+				case "$OPT" in
+					o) opts[$tmpidx]="${tmparr[*]}";;
+					v) vars[$tmpidx]="${tmparr[*]}";;
 				esac;;
+				IFS="$_IFS"
 			l)	longs+=("$OPTARG");;
 			t)	tails+=("$OPTARG");;
 		esac
