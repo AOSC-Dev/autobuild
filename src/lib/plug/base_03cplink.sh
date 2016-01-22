@@ -1,3 +1,3 @@
 cp --version | grep -q GNU || return
 
-eval "cp()( $(which cp) -l \"$@\"; )"
+cp(){ command cp --reflink=auto; } # not doing -l; refer to scriptlets:cp-wrapper
